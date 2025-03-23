@@ -1,8 +1,6 @@
 // next.config.js
 module.exports = {
-  assetPrefix: './', // Это добавит относительный путь для статических файлов
-  trailingSlash: true,
-
+  basePath: "/blogging",
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -11,5 +9,4 @@ module.exports = {
     ignoreBuildErrors: true,
   },
   output: "export", // Указываем, что проект будет статическим
-  distDir: "docs", // Папка, куда будет собран статический сайт
 };
