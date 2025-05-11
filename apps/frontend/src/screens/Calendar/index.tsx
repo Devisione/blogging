@@ -44,7 +44,7 @@ const formats = {
 };
 
 const messages = {
-  allDay: "Все дни",
+  allDay: "Весь день",
   previous: "Предыдущий",
   next: "Следующий",
   today: "Сегодня",

@@ -69,16 +69,14 @@ const EventModal = ({
 
   // Обработчик изменения типа повторения
   const handleRepeatChange = (value: string | null) => {
-    if (eventData.recurrenceStart) {
-      setEventData({
-        ...eventData,
-        recurrenceType: value ? value : "none",
-        recurrenceDays:
-          value === "weekly"
-            ? [DAYS[getDayOfWeek(eventData.date) - 1].value]
-            : [],
-      });
-    }
+    setEventData({
+      ...eventData,
+      recurrenceType: value ? value : "none",
+      recurrenceDays:
+        value === "weekly"
+          ? [DAYS[getDayOfWeek(eventData.date) - 1].value]
+          : [],
+    });
   };
 
   // Обработчик изменения дней недели для повторяющихся событий
@@ -202,11 +200,8 @@ const EventModal = ({
                     disabled={
                       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- что то тут лагает
                       isOneDay
-                        ? DAYS[
-                            getDayOfWeek(
-                              eventData.recurrenceStart || new Date(),
-                            ) - 1
-                          ].value === day.value
+                        ? DAYS[getDayOfWeek(eventData.date) - 1].value ===
+                          day.value
                         : false
                     }
                     key={day.value}
