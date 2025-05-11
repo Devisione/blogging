@@ -5,7 +5,10 @@ import "@mantine/dates/styles.css";
 import type { NextPageWithLayout } from "@features/Layout/model/types";
 import { EffectorNext } from "@effector/next";
 import Layout from "@features/Layout/ui";
+import { DatesProvider } from "@mantine/dates";
 import { RouterInitialize } from "@services/Router/model";
+// eslint-disable-next-line import/no-extraneous-dependencies -- зависимость от @mantine/dates
+import "dayjs/locale/ru";
 
 const App = ({
   Component,
@@ -18,7 +21,9 @@ const App = ({
       <RouterInitialize />
 
       <MantineProvider>
-        {getLayout(<Component {...pageProps} />)}
+        <DatesProvider settings={{ locale: "ru" }}>
+          {getLayout(<Component {...pageProps} />)}
+        </DatesProvider>
       </MantineProvider>
     </EffectorNext>
   );

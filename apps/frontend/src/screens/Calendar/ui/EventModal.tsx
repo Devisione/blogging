@@ -9,15 +9,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { DatePickerInput, TimeInput } from "@mantine/dates";
-import {
-  addMinutes,
-  differenceInHours,
-  endOfDay,
-  format,
-  getDay,
-  set,
-  startOfDay,
-} from "date-fns";
+import { format, getDay, set, startOfDay } from "date-fns";
 import type { Event } from "@entities/Event/model/types";
 
 interface EventModalProps {
@@ -58,11 +50,9 @@ const EventModal = ({
     const [hours, minutes] = time.split(":").map(Number);
     if (eventData.recurrenceStart) {
       const newStartTime = set(eventData.recurrenceStart, { hours, minutes });
-      const newEndTime = addMinutes(newStartTime, eventData.duration);
       setEventData({
         ...eventData,
-        recurrenceStart: newStartTime,
-        recurrenceEnd: newEndTime,
+        date: newStartTime,
       });
     }
   };
@@ -70,14 +60,9 @@ const EventModal = ({
   // Обработчик изменения длительности события
   const handleDurationChange = (value: number | string | null) => {
     if (value !== null && eventData.recurrenceStart) {
-      const newEndTime = addMinutes(
-        eventData.recurrenceStart,
-        typeof value === "string" ? parseInt(value) : value,
-      );
       setEventData({
         ...eventData,
-        duration: parseInt(value.toString()),
-        recurrenceEnd: newEndTime,
+        duration: typeof value === "string" ? parseInt(value) : value,
       });
     }
   };
@@ -90,7 +75,7 @@ const EventModal = ({
         recurrenceType: value ? value : "none",
         recurrenceDays:
           value === "weekly"
-            ? [DAYS[getDayOfWeek(eventData.recurrenceStart) - 1].value]
+            ? [DAYS[getDayOfWeek(eventData.date) - 1].value]
             : [],
       });
     }
@@ -103,23 +88,20 @@ const EventModal = ({
 
   // Обработчик изменения события на весь день (по длительности)
   const handleAllDayChange = (checked: boolean) => {
-    if (!eventData.recurrenceStart) return;
-
     if (checked) {
-      const newStartTime = startOfDay(eventData.recurrenceStart);
-      const newEndTime = endOfDay(newStartTime);
+      const newStartTime = startOfDay(eventData.date);
       setEventData({
         ...eventData,
+        date: newStartTime,
         duration: 1440, // 1440 минут = 24 часа
-        recurrenceStart: newStartTime,
-        recurrenceEnd: newEndTime,
       });
     } else {
-      const newEndTime = addMinutes(eventData.recurrenceStart, 30);
+      const newStartTime = startOfDay(eventData.date);
+
       setEventData({
         ...eventData,
+        date: newStartTime,
         duration: 30,
-        recurrenceEnd: newEndTime,
       });
     }
   };
@@ -127,18 +109,14 @@ const EventModal = ({
   const isAllDay = eventData.duration === 1440;
 
   const isOneDay = useMemo(() => {
-    if (!eventData.recurrenceStart || !eventData.recurrenceEnd) return false;
+    const endDate = new Date(eventData.date);
+    endDate.setMinutes(eventData.date.getMinutes() + eventData.duration);
+    endDate.setSeconds(endDate.getSeconds() - 1);
 
-    return (
-      format(eventData.recurrenceStart, "dd.MM.yyyy") ===
-        format(eventData.recurrenceEnd, "dd.MM.yyyy") ||
-      differenceInHours(eventData.recurrenceEnd, eventData.recurrenceStart) ===
-        24
-    );
+    return eventData.date.getDay() === endDate.getDay();
   }, [eventData]);
 
-  const isCreate = eventData.id === "";
-  console.log(eventData);
+  const isCreate = Boolean(!eventData.id);
 
   return (
     <Modal
@@ -157,17 +135,16 @@ const EventModal = ({
       />
 
       {/* Добавление поля для выбора даты начала события при создании нового события */}
-      {eventData.id === "" && (
+      {!eventData.id && (
         <DatePickerInput
           label="Дата события"
           onChange={(date) => {
             setEventData({
               ...eventData,
-              recurrenceStart: date ? date : new Date(),
-              recurrenceEnd: date ? date : new Date(),
+              date: date ? date : new Date(),
             });
           }}
-          value={eventData.recurrenceStart}
+          value={eventData.date}
         />
       )}
 
@@ -187,11 +164,7 @@ const EventModal = ({
           <TimeInput
             label="Время события"
             onChange={handleStartTimeChange}
-            value={
-              eventData.recurrenceStart
-                ? format(eventData.recurrenceStart, "HH:mm")
-                : void 0
-            }
+            value={format(eventData.date, "HH:mm")}
           />
 
           <NumberInput

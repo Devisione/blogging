@@ -12,9 +12,11 @@ import {
   $preparedCalendarEvents,
   onCreateEvent,
   onDeleteEvent,
+  onUpdateEvent,
 } from "@entities/Event/model/store";
 import type { Event } from "@entities/Event/model/types";
 import EventModal from "./ui/EventModal";
+import MonthEvent from "./ui/MonthEvent";
 
 // Локализация для date-fns
 const locales = {
@@ -55,10 +57,13 @@ const messages = {
   event: "Событие",
 };
 
+type ModifiedEvent = Event & { end: string; start: string };
+
 const CalendarPage = () => {
   const events = useUnit($preparedCalendarEvents);
   const onCreate = useUnit(onCreateEvent);
   const onDelete = useUnit(onDeleteEvent);
+  const onUpdate = useUnit(onUpdateEvent);
   const getDefaultEvent = useCallback(
     (): Omit<Event, "id"> & Partial<Pick<Event, "id">> => ({
       title: "",
@@ -75,8 +80,6 @@ const CalendarPage = () => {
     [],
   );
 
-  console.log(events);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [eventData, setEventData] = useState(getDefaultEvent());
 
@@ -91,8 +94,7 @@ const CalendarPage = () => {
     } else {
       setEventData({
         ...getDefaultEvent(),
-        recurrenceStart: date,
-        recurrenceEnd: date,
+        date,
       });
     }
     setModalOpen(true);
@@ -100,7 +102,7 @@ const CalendarPage = () => {
 
   const saveEvent = async () => {
     if (eventData.id) {
-      // UPDATE
+      await onUpdate({ ...eventData, id: eventData.id });
     } else {
       await onCreate({ ...eventData });
     }
@@ -119,10 +121,10 @@ const CalendarPage = () => {
     const duration = Math.floor(
       (end.getTime() - start.getTime()) / (1000 * 60),
     );
+
     setEventData({
       ...getDefaultEvent(),
-      recurrenceStart: start,
-      recurrenceEnd: end,
+      date: start,
       duration,
     });
     setModalOpen(true);
@@ -133,8 +135,10 @@ const CalendarPage = () => {
       ? events?.find(({ id }) => id === targetEvent.parentId)
       : targetEvent;
 
-    openModal(findedEvent?.recurrenceStart, findedEvent);
+    openModal(findedEvent?.date, findedEvent);
   };
+
+  console.log(events);
 
   return (
     <div style={{ height: "calc(100dvh - 108px)" }}>
@@ -151,18 +155,23 @@ const CalendarPage = () => {
       >
         Добавить событие
       </Button>
-      {/* @ts-expect-error -- всё ок */}
-      <Calendar<Event>
+      {/* @ts-expect-error -- тут всё ок */}
+      <Calendar<ModifiedEvent>
+        components={{
+          month: {
+            event: MonthEvent, // только для month view
+          },
+        }}
         culture="ru"
-        endAccessor="recurrenceEnd"
-        events={events ? events : void 0}
+        endAccessor="end"
+        events={events ? (events as never as ModifiedEvent[]) : void 0}
         formats={formats}
         localizer={localizer}
         messages={messages}
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
         selectable
-        startAccessor="recurrenceStart"
+        startAccessor="start"
         style={{ height: "calc(100% - 109px)" }}
       />
 
