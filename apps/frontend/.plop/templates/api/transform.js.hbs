@@ -1,0 +1,8 @@
+import type { {{pascalCase api_name}}OutputDto } from "./output.dto";
+
+export const transform{{pascalCase api_name}}ResponseToModel = (
+    params: {{pascalCase api_name}}OutputDto,
+): any => {
+    console.log(params);
+    return {};
+};

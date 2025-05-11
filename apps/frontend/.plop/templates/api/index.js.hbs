@@ -1,0 +1,11 @@
+import { transform{{pascalCase api_name}}ResponseToModel } from "./transform";
+import type { {{pascalCase api_name}}InputDto } from "./input.dto";
+
+const {{camelCase api_name}} = async (inputDto: {{pascalCase api_name}}InputDto): Promise<any> => {
+    console.log(inputDto);
+    return new Promise((res) => {
+        res(transform{{pascalCase api_name}}ResponseToModel({}));
+    });
+};
+
+export default {{camelCase api_name}};
