@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import { AppShell, Burger } from "@mantine/core";
+import { AppShell, Burger, Flex } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Navbar } from "./Navbar";
 
@@ -17,8 +17,24 @@ const Layout = (props: PropsWithChildren) => {
       padding="md"
     >
       <AppShell.Header>
-        <Burger hiddenFrom="sm" onClick={toggle} opened={opened} size="sm" />
-        <div>Logo</div>
+        <Flex style={{ height: "100%" }}>
+          <Burger hiddenFrom="sm" onClick={toggle} opened={opened} size="sm" />
+          <div
+            style={{
+              width: "var(--app-shell-navbar-width)",
+              height: "100%",
+            }}
+          >
+            <div>Logo</div>
+          </div>
+          <Flex
+            id="header-portal"
+            style={{
+              padding: "12px",
+              flex: 1,
+            }}
+          />
+        </Flex>
       </AppShell.Header>
 
       <AppShell.Navbar p="md">

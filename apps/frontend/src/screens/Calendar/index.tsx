@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import type { SlotInfo } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { createPortal } from "react-dom";
 import { Button } from "@mantine/core";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 // @ts-expect-error -- всё ок
@@ -141,20 +142,25 @@ const CalendarPage = () => {
   console.log(events);
 
   return (
-    <div style={{ height: "calc(100dvh - 108px)" }}>
-      <h1
-        style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}
-      >
-        Календарь событий
-      </h1>
-      <Button
-        onClick={() => {
-          openModal(new Date());
-        }}
-        style={{ marginBottom: "20px" }}
-      >
-        Добавить событие
-      </Button>
+    <div style={{ height: "calc(100dvh - 92px)" }}>
+      {createPortal(
+        <>
+          <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
+            Календарь событий
+          </h1>
+          <Button
+            onClick={() => {
+              openModal(new Date());
+            }}
+            style={{ marginLeft: "12px" }}
+          >
+            Добавить событие
+          </Button>
+        </>,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть
+        document.querySelector("#header-portal")!,
+      )}
+
       {/* @ts-expect-error -- тут всё ок */}
       <Calendar<ModifiedEvent>
         components={{
@@ -172,7 +178,7 @@ const CalendarPage = () => {
         onSelectSlot={handleSelectSlot}
         selectable
         startAccessor="start"
-        style={{ height: "calc(100% - 109px)" }}
+        style={{ height: "100%" }}
       />
 
       <EventModal
