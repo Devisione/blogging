@@ -82,6 +82,7 @@ export const RichTextEditor = <T extends FieldValues>({
               style={{
                 border: `1px solid ${error ? "var(--mantine-color-red-6)" : "var(--mantine-color-gray-4)"}`,
                 borderRadius: "var(--mantine-radius-sm)",
+                overflow: "auto",
                 width: "100%",
               }}
             >

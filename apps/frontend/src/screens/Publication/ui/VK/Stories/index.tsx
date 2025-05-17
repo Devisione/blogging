@@ -23,7 +23,7 @@ export const VKStoriesForm = () => {
   const formData = watch();
 
   return (
-    <Grid>
+    <Grid w="1040px">
       <Grid.Col span={6}>
         <DatePicker
           control={control}

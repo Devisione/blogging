@@ -70,6 +70,7 @@ export const YoutubeVideoForm = () => {
                   width: "100%",
                   height: "100%",
                   borderRadius: "8px",
+                  overflow: "auto",
                   backgroundColor: "black",
                 }}
               />
