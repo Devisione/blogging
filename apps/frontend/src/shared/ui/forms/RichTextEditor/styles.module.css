@@ -1,0 +1,73 @@
+.container {
+  position: relative;
+  background: var(--mantine-color-white);
+  width: 100%;
+}
+
+.toolbar {
+  padding: 8px;
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.editorContainer {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  resize: none;
+  font-size: var(--mantine-font-size-sm);
+  caret-color: var(--mantine-color-blue-filled);
+  position: relative;
+  tab-size: 1;
+  outline: 0;
+  padding: 12px;
+  width: 100%;
+  word-break: break-all;         /* Разбивает все слова посимвольно */
+  white-space: pre-wrap;         /* Сохраняет пробелы и переносы */
+  overflow-wrap: break-word;     /* Современное свойство для переноса */
+}
+
+.input:empty::before {
+  content: attr(data-placeholder);
+  color: var(--mantine-color-gray-5);
+  pointer-events: none;
+  position: absolute;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.placeholder {
+  color: var(--mantine-color-gray-5);
+  overflow: hidden;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 12px;
+  left: 12px;
+  font-size: var(--mantine-font-size-sm);
+  user-select: none;
+  display: inline-block;
+  pointer-events: none;
+}
+
+.paragraph {
+  margin: 0;
+  position: relative;
+  word-break: break-all;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.textBold {
+  font-weight: bold;
+}
+
+.textItalic {
+  font-style: italic;
+}
+
+.textUnderline {
+  text-decoration: underline;
+} 
