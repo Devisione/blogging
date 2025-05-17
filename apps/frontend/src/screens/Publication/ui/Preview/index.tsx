@@ -6,15 +6,15 @@ interface PreviewProps {
   children: React.ReactNode;
 }
 
-export function Preview({ title, publishDate, children }: PreviewProps) {
+export const Preview = ({ title, publishDate, children }: PreviewProps) => {
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card padding="lg" radius="md" shadow="sm" withBorder>
       <Stack>
-        <Text size="lg" fw={500}>
+        <Text fw={500} size="lg">
           {title}
         </Text>
         {children}
-        <Text size="xs" c="dimmed">
+        <Text c="dimmed" size="xs">
           Дата публикации: {publishDate.toLocaleDateString('ru-RU')}
         </Text>
       </Stack>

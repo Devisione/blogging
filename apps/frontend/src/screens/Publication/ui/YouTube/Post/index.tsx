@@ -1,9 +1,9 @@
-import { Grid } from '@mantine/core';
-import { useForm } from 'react-hook-form';
-import { DatePicker } from '@shared/ui/forms/DatePicker';
-import { AssetUpload } from '@shared/ui/forms/AssetUpload';
-import { RichTextEditor } from '@shared/ui/forms/RichTextEditor';
-import { Preview } from './Preview';
+import { useForm } from "react-hook-form";
+import { Grid } from "@mantine/core";
+import { AssetUpload } from "@shared/ui/forms/AssetUpload";
+import { DatePicker } from "@shared/ui/forms/DatePicker";
+import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { Preview } from "./Preview";
 
 interface YoutubePostFormData {
   publishDate: Date;
@@ -12,43 +12,43 @@ interface YoutubePostFormData {
   content: string;
 }
 
-export default function YoutubePostForm() {
+export const YoutubePostForm = () => {
   const { control, watch } = useForm<YoutubePostFormData>({
     defaultValues: {
       publishDate: new Date(),
-      coverImage: '',
-      title: '',
-      content: '',
+      coverImage: "",
+      title: "",
+      content: "",
     },
   });
 
   const formData = watch();
 
   return (
-    <Grid w={"1040px"}>
+    <Grid w="1040px">
       <Grid.Col span={6}>
         <DatePicker
           control={control}
-          name="publishDate"
           label="Дата публикации"
+          name="publishDate"
         />
         <AssetUpload
-          control={control}
-          name="coverImage"
-          label="Обложка"
           accept="image/*"
+          control={control}
+          label="Обложка"
+          name="coverImage"
         />
         <RichTextEditor
           control={control}
+          label="Заголовок"
           name="title"
           toolbar={false}
-          label="Заголовок"
         />
         <RichTextEditor
           control={control}
-          name="content"
-          toolbar={true}
           label="Контент"
+          name="content"
+          toolbar
         />
       </Grid.Col>
       <Grid.Col span={6}>
@@ -56,4 +56,4 @@ export default function YoutubePostForm() {
       </Grid.Col>
     </Grid>
   );
-} 
+};

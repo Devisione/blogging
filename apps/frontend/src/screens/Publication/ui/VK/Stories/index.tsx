@@ -1,9 +1,9 @@
-import { Grid } from '@mantine/core';
-import { useForm } from 'react-hook-form';
-import { DatePicker } from '@shared/ui/forms/DatePicker';
-import { AssetUpload } from '@shared/ui/forms/AssetUpload';
-import { RichTextEditor } from '@shared/ui/forms/RichTextEditor';
-import { Preview } from './Preview';
+import { useForm } from "react-hook-form";
+import { Grid } from "@mantine/core";
+import { AssetUpload } from "@shared/ui/forms/AssetUpload";
+import { DatePicker } from "@shared/ui/forms/DatePicker";
+import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { Preview } from "./Preview";
 
 interface VKStoriesFormData {
   publishDate: Date;
@@ -11,12 +11,12 @@ interface VKStoriesFormData {
   caption: string;
 }
 
-export default function VKStoriesForm() {
+export const VKStoriesForm = () => {
   const { control, watch } = useForm<VKStoriesFormData>({
     defaultValues: {
       publishDate: new Date(),
-      image: '',
-      caption: '',
+      image: "",
+      caption: "",
     },
   });
 
@@ -27,20 +27,20 @@ export default function VKStoriesForm() {
       <Grid.Col span={6}>
         <DatePicker
           control={control}
-          name="publishDate"
           label="Дата публикации"
+          name="publishDate"
         />
         <AssetUpload
-          control={control}
-          name="image"
-          label="Изображение"
           accept="image/*"
+          control={control}
+          label="Изображение"
+          name="image"
         />
         <RichTextEditor
           control={control}
-          toolbar
-          name="caption"
           label="Подпись"
+          name="caption"
+          toolbar
         />
       </Grid.Col>
       <Grid.Col span={6}>
@@ -48,4 +48,4 @@ export default function VKStoriesForm() {
       </Grid.Col>
     </Grid>
   );
-} 
+};

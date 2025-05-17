@@ -5,7 +5,7 @@ import { IconBold, IconItalic, IconUnderline, IconArrowBackUp, IconArrowForwardU
 import { ActionIcon, Group } from '@mantine/core';
 import classes from '../styles.module.css';
 
-export function ToolbarPlugin() {
+export const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext();
 
   const formatText = useCallback(
@@ -27,37 +27,37 @@ export function ToolbarPlugin() {
     <div className={classes.toolbar}>
       <Group gap="xs">
         <ActionIcon
-          variant="light"
-          onClick={() => formatText('bold')}
+          onClick={() => { formatText('bold'); }}
           title="Bold (Ctrl+B)"
+          variant="light"
         >
           <IconBold size={16} />
         </ActionIcon>
         <ActionIcon
-          variant="light"
-          onClick={() => formatText('italic')}
+          onClick={() => { formatText('italic'); }}
           title="Italic (Ctrl+I)"
+          variant="light"
         >
           <IconItalic size={16} />
         </ActionIcon>
         <ActionIcon
-          variant="light"
-          onClick={() => formatText('underline')}
+          onClick={() => { formatText('underline'); }}
           title="Underline (Ctrl+U)"
+          variant="light"
         >
           <IconUnderline size={16} />
         </ActionIcon>
         <ActionIcon
-          variant="light"
           onClick={undo}
           title="Undo (Ctrl+Z)"
+          variant="light"
         >
           <IconArrowBackUp size={16} />
         </ActionIcon>
         <ActionIcon
-          variant="light"
           onClick={redo}
           title="Redo (Ctrl+Y)"
+          variant="light"
         >
           <IconArrowForwardUp size={16} />
         </ActionIcon>

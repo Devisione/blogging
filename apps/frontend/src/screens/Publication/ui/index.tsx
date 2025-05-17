@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { DragEndEvent } from "@dnd-kit/core/dist/types";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -6,20 +7,21 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+// eslint-disable-next-line import/no-extraneous-dependencies -- в дев депсах
 import { CSS } from "@dnd-kit/utilities";
 import { ActionIcon, Button, Flex, Select, Stack, Tabs } from "@mantine/core";
 import { IconPlus, IconX } from "@tabler/icons-react";
-import YoutubeShortsForm from "./YouTube/Shorts";
-import YoutubeVideoForm from "./YouTube/Video";
-import YoutubePostForm from "./YouTube/Post";
-import YoutubeStoriesForm from "./YouTube/Stories";
-import VKStoriesForm from "./VK/Stories";
-import VKPostForm from "./VK/Post";
-import VKShortForm from "./VK/Short";
-import VKVideoForm from "./VK/Video";
-import TelegramPostForm from "./Telegram/Post";
-import TelegramStoriesForm from "./Telegram/Stories";
 import classes from "./index.module.css";
+import { TelegramPostForm } from "./Telegram/Post";
+import { TelegramStoriesForm } from "./Telegram/Stories";
+import { VKPostForm } from "./VK/Post";
+import { VKShortForm } from "./VK/Short";
+import { VKStoriesForm } from "./VK/Stories";
+import { VKVideoForm } from "./VK/Video";
+import { YoutubePostForm } from "./YouTube/Post";
+import { YoutubeShortsForm } from "./YouTube/Shorts";
+import { YoutubeStoriesForm } from "./YouTube/Stories";
+import { YoutubeVideoForm } from "./YouTube/Video";
 
 enum Platform {
   YouTube = "YouTube",
@@ -41,7 +43,7 @@ const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   [ContentType.VIDEO]: "Видео",
 };
 
-type PlatformContentTypes = {
+interface PlatformContentTypes {
   [Platform.VK]: {
     [ContentType.POST]: JSX.Element;
     [ContentType.SHORT]: JSX.Element;
@@ -58,7 +60,7 @@ type PlatformContentTypes = {
     [ContentType.STORIES]: JSX.Element;
     [ContentType.VIDEO]: JSX.Element;
   };
-};
+}
 
 const PLATFORM_CONTENT: PlatformContentTypes = {
   [Platform.VK]: {
@@ -78,8 +80,6 @@ const PLATFORM_CONTENT: PlatformContentTypes = {
     [ContentType.VIDEO]: <YoutubeVideoForm />,
   },
 };
-
-type PlatformSpecificContentType<P extends Platform> = keyof PlatformContentTypes[P];
 
 interface Tab {
   id: string;
@@ -106,18 +106,16 @@ const SortableTab = ({
     transition,
   };
 
-  const availableContentTypes = Object.keys(PLATFORM_CONTENT[tab.platform]).map(type => ({
-    value: type,
-    label: CONTENT_TYPE_LABELS[type as ContentType]
-  }));
-
-  const isContentTypeAvailable = (platform: Platform, type: ContentType): boolean => {
-    return type in PLATFORM_CONTENT[platform];
-  };
+  const availableContentTypes = Object.keys(PLATFORM_CONTENT[tab.platform]).map(
+    (type) => ({
+      value: type,
+      label: CONTENT_TYPE_LABELS[type as ContentType],
+    }),
+  );
 
   return (
     <div ref={setNodeRef} style={style}>
-      <Tabs.Tab w="100%" value={tab.id}>
+      <Tabs.Tab value={tab.id} w="100%">
         <Stack gap="xs">
           <Flex align="center" w="100%">
             <span
@@ -128,33 +126,38 @@ const SortableTab = ({
               ⠿
             </span>
             <Select
-              value={tab.platform}
+              data={Object.values(Platform)}
               onChange={(value) => {
-                if (value && Object.values(Platform).includes(value as Platform)) {
+                if (
+                  value &&
+                  Object.values(Platform).includes(value as Platform)
+                ) {
                   onPlatformChange(tab.id, value as Platform);
                 }
               }}
-              data={Object.values(Platform)}
               style={{ flex: 1 }}
+              value={tab.platform}
             />
             <ActionIcon
-              component="div"
-              size="xs"
               color="red"
+              component="div"
+              ml="xs"
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove(tab.id);
               }}
-              ml="xs"
+              size="xs"
             >
               <IconX size={10} />
             </ActionIcon>
           </Flex>
           <Select
-            value={tab.contentType}
-            onChange={(value) => value && onContentTypeChange(tab.id, value as ContentType)}
             data={availableContentTypes}
+            onChange={(value) => {
+              value && onContentTypeChange(tab.id, value as ContentType);
+            }}
             style={{ marginLeft: 24 }}
+            value={tab.contentType}
           />
         </Stack>
       </Tabs.Tab>
@@ -162,7 +165,7 @@ const SortableTab = ({
   );
 };
 
-export default function EditableTabs() {
+const EditableTabs = () => {
   const [tabs, setTabs] = useState<Tab[]>([
     {
       id: "1",
@@ -172,7 +175,10 @@ export default function EditableTabs() {
   ]);
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || "");
 
-  const isContentTypeAvailable = (platform: Platform, type: ContentType): boolean => {
+  const isContentTypeAvailable = (
+    platform: Platform,
+    type: ContentType,
+  ): boolean => {
     return type in PLATFORM_CONTENT[platform];
   };
 
@@ -196,11 +202,11 @@ export default function EditableTabs() {
     }
   };
 
-  const handleDragEnd = (event: { active: any; over: any }) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
+    if (active.id !== over?.id) {
       const oldIndex = tabs.findIndex((tab) => tab.id === active.id);
-      const newIndex = tabs.findIndex((tab) => tab.id === over.id);
+      const newIndex = tabs.findIndex((tab) => tab.id === over?.id);
       setTabs(arrayMove(tabs, oldIndex, newIndex));
     }
   };
@@ -213,11 +219,11 @@ export default function EditableTabs() {
           return {
             ...tab,
             platform,
-            contentType: availableContentTypes[0] as ContentType
+            contentType: availableContentTypes[0] as ContentType,
           };
         }
         return tab;
-      })
+      }),
     );
   };
 
@@ -226,57 +232,58 @@ export default function EditableTabs() {
   };
 
   return (
-    <>
-      <Tabs
-        value={activeTab}
-        onChange={(value) => {
-          setActiveTab(value!);
-        }}
-        orientation="vertical"
-        classNames={{ tabLabel: classes.tabLabel }}
-      >
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+    <Tabs
+      classNames={{ tabLabel: classes.tabLabel }}
+      onChange={(value) => {
+        if (value) {
+          setActiveTab(value);
+        }
+      }}
+      orientation="vertical"
+      value={activeTab}
+    >
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext
+          items={tabs.map((tab) => tab.id)}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={tabs.map((tab) => tab.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <Tabs.List w={300}>
-              <Button
-                component="div"
-                mb={12}
-                onClick={addTab}
-                variant="outline"
-                rightSection={
-                  <ActionIcon variant="light" size="sm" ml="xs">
-                    <IconPlus size={16} />
-                  </ActionIcon>
-                }
-              >
-                Добавить канал публикации
-              </Button>
-              {tabs.map((tab) => (
-                <SortableTab
-                  key={tab.id}
-                  tab={tab}
-                  onRemove={removeTab}
-                  onPlatformChange={handlePlatformChange}
-                  onContentTypeChange={handleContentTypeChange}
-                />
-              ))}
-            </Tabs.List>
-          </SortableContext>
-        </DndContext>
+          <Tabs.List w={300}>
+            <Button
+              component="div"
+              mb={12}
+              onClick={addTab}
+              rightSection={
+                <ActionIcon ml="xs" size="sm" variant="light">
+                  <IconPlus size={16} />
+                </ActionIcon>
+              }
+              variant="outline"
+            >
+              Добавить канал публикации
+            </Button>
+            {tabs.map((tab) => (
+              <SortableTab
+                key={tab.id}
+                onContentTypeChange={handleContentTypeChange}
+                onPlatformChange={handlePlatformChange}
+                onRemove={removeTab}
+                tab={tab}
+              />
+            ))}
+          </Tabs.List>
+        </SortableContext>
+      </DndContext>
 
-        {tabs.map((tab) => (
-          <Tabs.Panel value={tab.id} key={tab.id} pt="xs" ml={24}>
-            {isContentTypeAvailable(tab.platform, tab.contentType) && 
-              PLATFORM_CONTENT[tab.platform][tab.contentType as keyof typeof PLATFORM_CONTENT[typeof tab.platform]]}
-          </Tabs.Panel>
-        ))}
-      </Tabs>
-    </>
+      {tabs.map((tab) => (
+        <Tabs.Panel key={tab.id} ml={24} pt="xs" value={tab.id}>
+          {isContentTypeAvailable(tab.platform, tab.contentType) &&
+            PLATFORM_CONTENT[tab.platform][
+              tab.contentType as keyof (typeof PLATFORM_CONTENT)[typeof tab.platform]
+            ]}
+        </Tabs.Panel>
+      ))}
+    </Tabs>
   );
-}
+};
+
+export default EditableTabs;

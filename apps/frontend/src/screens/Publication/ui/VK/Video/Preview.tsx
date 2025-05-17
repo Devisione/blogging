@@ -1,5 +1,5 @@
-import { AspectRatio, Stack, Text } from '@mantine/core';
-import { BasePreview } from '@shared/ui/preview/BasePreview';
+import { AspectRatio, Stack, Text } from "@mantine/core";
+import { BasePreview } from "@shared/ui/preview/BasePreview";
 
 interface PreviewProps {
   data: {
@@ -10,36 +10,36 @@ interface PreviewProps {
   };
 }
 
-export function Preview({ data }: PreviewProps) {
-  const videoUrl = data.video instanceof File 
-    ? URL.createObjectURL(data.video)
-    : data.video;
+export const Preview = ({ data }: PreviewProps) => {
+  const videoUrl =
+    data.video instanceof File ? URL.createObjectURL(data.video) : data.video;
 
   return (
     <BasePreview title="Предпросмотр VK Video">
       <Stack>
-        <AspectRatio ratio={16/9} maw={560}>
+        <AspectRatio maw={560} ratio={16 / 9}>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок */}
           <video
-            src={videoUrl}
             controls
+            src={videoUrl}
             style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '8px',
-              backgroundColor: 'black',
+              width: "100%",
+              height: "100%",
+              borderRadius: "8px",
+              backgroundColor: "black",
             }}
           />
         </AspectRatio>
-        <Text size="lg" fw={500} style={{wordWrap: "break-word"}}>
+        <Text fw={500} size="lg" style={{ wordWrap: "break-word" }}>
           {data.title}
         </Text>
-        <Text size="sm" style={{wordWrap: "break-word"}}>
+        <Text size="sm" style={{ wordWrap: "break-word" }}>
           {data.description}
         </Text>
-        <Text size="xs" c="dimmed">
-          Дата публикации: {data.publishDate.toLocaleDateString('ru-RU')}
+        <Text c="dimmed" size="xs">
+          Дата публикации: {data.publishDate.toLocaleDateString("ru-RU")}
         </Text>
       </Stack>
     </BasePreview>
   );
-} 
+};

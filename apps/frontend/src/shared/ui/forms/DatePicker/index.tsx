@@ -1,5 +1,6 @@
 import { DatePickerInput } from '@mantine/dates';
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
+import type { Control, FieldValues, Path } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 interface DatePickerProps<T extends FieldValues> {
   control: Control<T>;
@@ -7,7 +8,7 @@ interface DatePickerProps<T extends FieldValues> {
   label: string;
 }
 
-export function DatePicker<T extends FieldValues>({ control, name, label }: DatePickerProps<T>) {
+export const DatePicker = <T extends FieldValues>({ control, name, label }: DatePickerProps<T>) => {
   return (
     <Controller
       control={control}
@@ -15,8 +16,8 @@ export function DatePicker<T extends FieldValues>({ control, name, label }: Date
       render={({ field, fieldState: { error } }) => (
         <DatePickerInput
           {...field}
-          label={label}
           error={error?.message}
+          label={label}
           valueFormat="DD.MM.YYYY"
         />
       )}

@@ -5,11 +5,11 @@ interface BasePreviewProps {
   children: React.ReactNode;
 }
 
-export function BasePreview({ title, children }: BasePreviewProps) {
+export const BasePreview = ({ title, children }: BasePreviewProps) => {
   return (
     <Box>
-      {title && <Text size="sm" mb="xs" fw={500}>{title}</Text>}
-      <Paper shadow="sm" p="md" withBorder>
+      {title ? <Text fw={500} mb="xs" size="sm">{title}</Text> : null}
+      <Paper p="md" shadow="sm" withBorder>
         {children}
       </Paper>
     </Box>

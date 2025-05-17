@@ -1,9 +1,9 @@
-import { Grid } from '@mantine/core';
-import { useForm } from 'react-hook-form';
-import { DatePicker } from '@shared/ui/forms/DatePicker';
-import { AssetUpload } from '@shared/ui/forms/AssetUpload';
-import { RichTextEditor } from '@shared/ui/forms/RichTextEditor';
-import { Preview } from './Preview';
+import { useForm } from "react-hook-form";
+import { Grid } from "@mantine/core";
+import { AssetUpload } from "@shared/ui/forms/AssetUpload";
+import { DatePicker } from "@shared/ui/forms/DatePicker";
+import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { Preview } from "./Preview";
 
 interface VKVideoFormData {
   publishDate: Date;
@@ -12,43 +12,43 @@ interface VKVideoFormData {
   description: string;
 }
 
-export default function VKVideoForm() {
+export const VKVideoForm = () => {
   const { control, watch } = useForm<VKVideoFormData>({
     defaultValues: {
       publishDate: new Date(),
-      video: '',
-      title: '',
-      description: '',
+      video: "",
+      title: "",
+      description: "",
     },
   });
 
   const formData = watch();
 
   return (
-    <Grid w={"1040px"}>
+    <Grid w="1040px">
       <Grid.Col span={6}>
         <DatePicker
           control={control}
-          name="publishDate"
           label="Дата публикации"
+          name="publishDate"
         />
         <AssetUpload
-          control={control}
-          name="video"
-          label="Видео"
           accept="video/*"
+          control={control}
+          label="Видео"
+          name="video"
         />
         <RichTextEditor
           control={control}
+          label="Заголовок"
           name="title"
           toolbar={false}
-          label="Заголовок"
         />
         <RichTextEditor
           control={control}
-          name="description"
-          toolbar={true}
           label="Описание"
+          name="description"
+          toolbar
         />
       </Grid.Col>
       <Grid.Col span={6}>
@@ -56,4 +56,4 @@ export default function VKVideoForm() {
       </Grid.Col>
     </Grid>
   );
-} 
+};

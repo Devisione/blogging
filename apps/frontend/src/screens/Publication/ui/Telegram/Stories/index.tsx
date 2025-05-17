@@ -1,9 +1,9 @@
-import { Grid, SegmentedControl } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { DatePicker } from '@shared/ui/forms/DatePicker';
-import { AssetUpload } from '@shared/ui/forms/AssetUpload';
-import { RichTextEditor } from '@shared/ui/forms/RichTextEditor';
-import { Preview } from './Preview';
+import { Controller, useForm } from "react-hook-form";
+import { Grid, SegmentedControl } from "@mantine/core";
+import { AssetUpload } from "@shared/ui/forms/AssetUpload";
+import { DatePicker } from "@shared/ui/forms/DatePicker";
+import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { Preview } from "./Preview";
 
 interface TelegramStoriesFormData {
   publishDate: Date;
@@ -12,54 +12,56 @@ interface TelegramStoriesFormData {
   isVideo: boolean;
 }
 
-export default function TelegramStoriesForm() {
+export const TelegramStoriesForm = () => {
   const { control, watch } = useForm<TelegramStoriesFormData>({
     defaultValues: {
       publishDate: new Date(),
-      media: '',
-      caption: '',
+      media: "",
+      caption: "",
       isVideo: false,
     },
   });
 
   const formData = watch();
-  const isVideo = watch('isVideo');
+  const isVideo = watch("isVideo");
 
   return (
-    <Grid w={"1040px"}>
+    <Grid w="1040px">
       <Grid.Col span={6}>
         <DatePicker
           control={control}
-          name="publishDate"
           label="Дата публикации"
+          name="publishDate"
         />
         <Controller
-          name="isVideo"
           control={control}
+          name="isVideo"
           render={({ field }) => (
             <SegmentedControl
               {...field}
-              value={field.value.toString()}
-              onChange={(value) => field.onChange(value === 'true')}
               data={[
-                { label: 'Изображение', value: 'false' },
-                { label: 'Видео', value: 'true' },
+                { label: "Изображение", value: "false" },
+                { label: "Видео", value: "true" },
               ]}
               mb="sm"
+              onChange={(value) => {
+                field.onChange(value === "true");
+              }}
+              value={field.value.toString()}
             />
           )}
         />
         <AssetUpload
-          control={control}
-          name="media"
-          label={isVideo ? "Видео" : "Изображение"}
           accept={isVideo ? "video/*" : "image/*"}
+          control={control}
+          label={isVideo ? "Видео" : "Изображение"}
+          name="media"
         />
         <RichTextEditor
           control={control}
+          label="Подпись"
           name="caption"
           toolbar={false}
-          label="Подпись"
         />
       </Grid.Col>
       <Grid.Col span={6}>
@@ -67,4 +69,4 @@ export default function TelegramStoriesForm() {
       </Grid.Col>
     </Grid>
   );
-} 
+};

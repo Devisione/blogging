@@ -10,7 +10,7 @@ interface PreviewProps {
   };
 }
 
-export function Preview({ data }: PreviewProps) {
+export const Preview = ({ data }: PreviewProps) => {
   const imageUrl = data.coverImage instanceof File 
     ? URL.createObjectURL(data.coverImage)
     : data.coverImage;
@@ -18,22 +18,20 @@ export function Preview({ data }: PreviewProps) {
   return (
     <BasePreview title="Предпросмотр YouTube Post">
       <Stack>
-        {imageUrl && (
-          <Image
-            src={imageUrl}
+        {imageUrl ? <Image
             alt={data.title}
-            radius="md"
             fit="cover"
             h={200}
-          />
-        )}
-        <Text size="lg" fw={500} style={{wordWrap: "break-word"}}>
+            radius="md"
+            src={imageUrl}
+          /> : null}
+        <Text fw={500} size="lg" style={{wordWrap: "break-word"}}>
           {data.title}
         </Text>
         <Text size="sm" style={{wordWrap: "break-word"}}>
           {data.content}
         </Text>
-        <Text size="xs" c="dimmed">
+        <Text c="dimmed" size="xs">
           Дата публикации: {data.publishDate.toLocaleDateString('ru-RU')}
         </Text>
       </Stack>

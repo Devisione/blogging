@@ -1,9 +1,9 @@
-import { Grid, AspectRatio, Stack, Text } from '@mantine/core';
-import { useForm } from 'react-hook-form';
-import { DatePicker } from '@shared/ui/forms/DatePicker';
-import { AssetUpload } from '@shared/ui/forms/AssetUpload';
-import { RichTextEditor } from '@shared/ui/forms/RichTextEditor';
-import { Preview } from '../../Preview';
+import { useForm } from "react-hook-form";
+import { AspectRatio, Grid, Stack, Text } from "@mantine/core";
+import { AssetUpload } from "@shared/ui/forms/AssetUpload";
+import { DatePicker } from "@shared/ui/forms/DatePicker";
+import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { Preview } from "../../Preview";
 
 interface YoutubeVideoFormData {
   publishDate: Date;
@@ -12,67 +12,72 @@ interface YoutubeVideoFormData {
   description: string;
 }
 
-export default function YoutubeVideoForm() {
+export const YoutubeVideoForm = () => {
   const { control, watch } = useForm<YoutubeVideoFormData>({
     defaultValues: {
       publishDate: new Date(),
-      video: '',
-      title: '',
-      description: '',
+      video: "",
+      title: "",
+      description: "",
     },
   });
 
   const formData = watch();
-  const videoUrl = formData.video instanceof File 
-    ? URL.createObjectURL(formData.video)
-    : formData.video;
+  const videoUrl =
+    formData.video instanceof File
+      ? URL.createObjectURL(formData.video)
+      : formData.video;
 
   return (
-    <Grid w={"1040px"}>
+    <Grid w="1040px">
       <Grid.Col span={6}>
         <DatePicker
           control={control}
-          name="publishDate"
           label="Дата публикации"
+          name="publishDate"
         />
         <AssetUpload
-          control={control}
-          name="video"
-          label="Видео"
           accept="video/*"
+          control={control}
+          label="Видео"
+          name="video"
         />
         <RichTextEditor
           control={control}
+          label="Заголовок"
           name="title"
           toolbar={false}
-          label="Заголовок"
         />
         <RichTextEditor
           control={control}
-          name="description"
-          toolbar={true}
           label="Описание"
+          name="description"
+          toolbar
         />
       </Grid.Col>
       <Grid.Col span={6}>
-        <Preview title="Предпросмотр YouTube Video" publishDate={formData.publishDate}>
+        <Preview
+          publishDate={formData.publishDate}
+          title="Предпросмотр YouTube Video"
+        >
           <Stack>
-            <AspectRatio ratio={16/9} maw={560}>
+            <AspectRatio maw={560} ratio={16 / 9}>
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок */}
               <video
-                src={videoUrl}
                 controls
+                src={videoUrl}
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '8px',
-                  backgroundColor: 'black',
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "8px",
+                  backgroundColor: "black",
                 }}
               />
             </AspectRatio>
-            <Text size="lg" fw={500} style={{wordWrap: "break-word"}}>
+            <Text fw={500} size="lg" style={{ wordWrap: "break-word" }}>
               {formData.title}
             </Text>
-            <Text size="sm" style={{wordWrap: "break-word"}}>
+            <Text size="sm" style={{ wordWrap: "break-word" }}>
               {formData.description}
             </Text>
           </Stack>
@@ -80,4 +85,4 @@ export default function YoutubeVideoForm() {
       </Grid.Col>
     </Grid>
   );
-} 
+};

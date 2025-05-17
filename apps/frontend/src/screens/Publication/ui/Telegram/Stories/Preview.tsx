@@ -1,5 +1,5 @@
-import { AspectRatio, Stack, Text, Image } from '@mantine/core';
-import { BasePreview } from '@shared/ui/preview/BasePreview';
+import { AspectRatio, Image, Stack, Text } from "@mantine/core";
+import { BasePreview } from "@shared/ui/preview/BasePreview";
 
 interface PreviewProps {
   data: {
@@ -10,46 +10,46 @@ interface PreviewProps {
   };
 }
 
-export function Preview({ data }: PreviewProps) {
-  const mediaUrl = data.media instanceof File 
-    ? URL.createObjectURL(data.media)
-    : data.media;
+export const Preview = ({ data }: PreviewProps) => {
+  const mediaUrl =
+    data.media instanceof File ? URL.createObjectURL(data.media) : data.media;
 
   return (
     <BasePreview title="Предпросмотр Telegram Stories">
       <Stack>
-        <AspectRatio ratio={9/16} maw={315}>
+        <AspectRatio maw={315} ratio={9 / 16}>
           {data.isVideo ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок
             <video
-              src={mediaUrl}
               controls
+              src={mediaUrl}
               style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '8px',
-                backgroundColor: 'black',
+                width: "100%",
+                height: "100%",
+                borderRadius: "8px",
+                backgroundColor: "black",
               }}
             />
           ) : (
             <Image
-              src={mediaUrl}
               alt={data.caption}
+              src={mediaUrl}
               style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '8px',
-                objectFit: 'cover',
+                width: "100%",
+                height: "100%",
+                borderRadius: "8px",
+                objectFit: "cover",
               }}
             />
           )}
         </AspectRatio>
-        <Text size="sm" style={{wordWrap: "break-word"}}>
+        <Text size="sm" style={{ wordWrap: "break-word" }}>
           {data.caption}
         </Text>
-        <Text size="xs" c="dimmed">
-          Дата публикации: {data.publishDate.toLocaleDateString('ru-RU')}
+        <Text c="dimmed" size="xs">
+          Дата публикации: {data.publishDate.toLocaleDateString("ru-RU")}
         </Text>
       </Stack>
     </BasePreview>
   );
-} 
+};

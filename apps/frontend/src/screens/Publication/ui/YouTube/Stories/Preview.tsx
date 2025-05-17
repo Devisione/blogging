@@ -1,5 +1,5 @@
-import { AspectRatio, Stack, Text, Image } from '@mantine/core';
-import { BasePreview } from '@shared/ui/preview/BasePreview';
+import { AspectRatio, Stack, Text } from "@mantine/core";
+import { BasePreview } from "@shared/ui/preview/BasePreview";
 
 interface PreviewProps {
   data: {
@@ -10,38 +10,39 @@ interface PreviewProps {
   };
 }
 
-export function Preview({ data }: PreviewProps) {
-  const videoUrl = data.video instanceof File 
-    ? URL.createObjectURL(data.video)
-    : data.video;
-  
-  const thumbnailUrl = data.thumbnail instanceof File
-    ? URL.createObjectURL(data.thumbnail)
-    : data.thumbnail;
+export const Preview = ({ data }: PreviewProps) => {
+  const videoUrl =
+    data.video instanceof File ? URL.createObjectURL(data.video) : data.video;
+
+  const thumbnailUrl =
+    data.thumbnail instanceof File
+      ? URL.createObjectURL(data.thumbnail)
+      : data.thumbnail;
 
   return (
     <BasePreview title="Предпросмотр YouTube Stories">
       <Stack>
-        <AspectRatio ratio={9/16} maw={315}>
+        <AspectRatio maw={315} ratio={9 / 16}>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок */}
           <video
-            src={videoUrl}
             controls
             poster={thumbnailUrl}
+            src={videoUrl}
             style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '8px',
-              backgroundColor: 'black',
+              width: "100%",
+              height: "100%",
+              borderRadius: "8px",
+              backgroundColor: "black",
             }}
           />
         </AspectRatio>
-        <Text size="sm" style={{wordWrap: "break-word"}}>
+        <Text size="sm" style={{ wordWrap: "break-word" }}>
           {data.caption}
         </Text>
-        <Text size="xs" c="dimmed">
-          Дата публикации: {data.publishDate.toLocaleDateString('ru-RU')}
+        <Text c="dimmed" size="xs">
+          Дата публикации: {data.publishDate.toLocaleDateString("ru-RU")}
         </Text>
       </Stack>
     </BasePreview>
   );
-} 
+};

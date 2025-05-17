@@ -5,8 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { createPortal } from "react-dom";
 import { Button } from "@mantine/core";
 import { format, getDay, parse, startOfWeek } from "date-fns";
-// @ts-expect-error -- всё ок
-import ru from "date-fns/locale/ru"; // Локализация для календаря
+import { ru } from "date-fns/locale/ru"; // Локализация для календаря
 
 import { useUnit } from "effector-react/effector-react.mjs";
 import {

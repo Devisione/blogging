@@ -9,7 +9,7 @@ interface PreviewProps {
   };
 }
 
-export function Preview({ data }: PreviewProps) {
+export const Preview = ({ data }: PreviewProps) => {
   const imageUrl = data.image instanceof File 
     ? URL.createObjectURL(data.image)
     : data.image;
@@ -17,11 +17,11 @@ export function Preview({ data }: PreviewProps) {
   return (
     <BasePreview title="Предпросмотр VK Stories">
       <Stack>
-        <AspectRatio ratio={9/16} maw={315}>
+        <AspectRatio maw={315} ratio={9/16}>
           <Box
+            alt="Story preview"
             component="img"
             src={imageUrl}
-            alt="Story preview"
             style={{
               width: '100%',
               height: '100%',
@@ -30,10 +30,10 @@ export function Preview({ data }: PreviewProps) {
             }}
           />
         </AspectRatio>
-        <Text size="sm" fw={500}>
+        <Text fw={500} size="sm">
           {data.caption}
         </Text>
-        <Text size="xs" c="dimmed">
+        <Text c="dimmed" size="xs">
           Дата публикации: {data.publishDate.toLocaleDateString('ru-RU')}
         </Text>
       </Stack>

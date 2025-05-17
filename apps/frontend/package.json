@@ -53,6 +53,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint_fix": "next lint --fix",
     "stylelint": "stylelint '**/*.scss' --cache",
     "generate": "plop",
     "postinstall": "cd ../.. && husky install"

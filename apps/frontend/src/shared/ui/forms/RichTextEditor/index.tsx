@@ -1,15 +1,17 @@
-import { useCallback } from 'react';
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
-import { Box, Text } from '@mantine/core';
-import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { $getRoot, $createParagraphNode, $createTextNode, EditorState } from 'lexical';
-import { ToolbarPlugin } from './plugins/ToolbarPlugin';
-import classes from './styles.module.css';
+import { useCallback } from "react";
+import { Controller } from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
+import type { EditorState } from "lexical";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { Box, Text } from "@mantine/core";
+import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
+import { ToolbarPlugin } from "./plugins/ToolbarPlugin";
+import classes from "./styles.module.css";
 
 const theme = {
   paragraph: classes.paragraph,
@@ -29,78 +31,94 @@ interface RichTextEditorProps<T extends FieldValues> {
   toolbar?: boolean;
 }
 
-export function RichTextEditor<T extends FieldValues>({ 
-  control, 
-  name, 
+export const RichTextEditor = <T extends FieldValues>({
+  control,
+  name,
   label,
-  mb = 'lg',
+  mb = "lg",
   toolbar = true,
-  placeholder = 'Enter your text...'
-}: RichTextEditorProps<T>) {
+  placeholder = "Enter your text...",
+}: RichTextEditorProps<T>) => {
+  const onEditorChange = useCallback(
+    (onChange: (value: string) => void, editorState: EditorState) => {
+      editorState.read(() => {
+        const root = $getRoot();
+        const textContent = root.getTextContent();
+        onChange(textContent);
+      });
+    },
+    [],
+  );
   return (
     <Controller
       control={control}
       name={name}
       render={({ field: { onChange, value }, fieldState: { error } }) => {
         const initialConfig = {
-          namespace: 'MyEditor',
+          namespace: "MyEditor",
           theme,
-          onError: (error: Error) => {
-            console.error(error);
+          onError: (errorField: Error) => {
+            console.error(errorField);
           },
           nodes: [],
           editable: true,
-          editorState: value ? () => {
-            const root = $getRoot();
-            const paragraph = $createParagraphNode();
-            const text = $createTextNode(value);
-            paragraph.append(text);
-            root.append(paragraph);
-          } : undefined,
+          editorState: value
+            ? () => {
+                const root = $getRoot();
+                const paragraph = $createParagraphNode();
+                const text = $createTextNode(value);
+                paragraph.append(text);
+                root.append(paragraph);
+              }
+            : undefined,
         };
-
-        const onEditorChange = useCallback((editorState: EditorState) => {
-          editorState.read(() => {
-            const root = $getRoot();
-            const textContent = root.getTextContent();
-            onChange(textContent);
-          });
-        }, [onChange]);
 
         return (
           <Box mb={mb}>
-            <Text size="sm" mb="xs">{label}</Text>
-            <Box 
-              style={{ 
-                border: `1px solid ${error ? 'var(--mantine-color-red-6)' : 'var(--mantine-color-gray-4)'}`,
-                borderRadius: 'var(--mantine-radius-sm)',
-                width: '100%',
+            <Text mb="xs" size="sm">
+              {label}
+            </Text>
+            <Box
+              style={{
+                border: `1px solid ${error ? "var(--mantine-color-red-6)" : "var(--mantine-color-gray-4)"}`,
+                borderRadius: "var(--mantine-radius-sm)",
+                width: "100%",
               }}
             >
               <LexicalComposer initialConfig={initialConfig}>
                 <div className={classes.container}>
-                  {toolbar && <ToolbarPlugin />}
+                  {toolbar ? <ToolbarPlugin /> : null}
                   <div className={classes.editorContainer}>
                     <RichTextPlugin
+                      ErrorBoundary={LexicalErrorBoundary}
                       contentEditable={
-                        <ContentEditable 
-                          className={classes.input} 
+                        <ContentEditable
+                          className={classes.input}
                           data-placeholder={placeholder}
                         />
                       }
-                      placeholder={<div className={classes.placeholder}>{placeholder}</div>}
-                      ErrorBoundary={LexicalErrorBoundary}
+                      placeholder={
+                        <div className={classes.placeholder}>{placeholder}</div>
+                      }
                     />
                   </div>
-                  <OnChangePlugin onChange={onEditorChange} />
+                  <OnChangePlugin
+                    onChange={(state) => {
+                      onEditorChange(onChange, state);
+                    }}
+                  />
                   <HistoryPlugin />
                 </div>
               </LexicalComposer>
             </Box>
-            {error && <Text color="red" size="xs" mt="xs">{error.message}</Text>}
+            {error ? (
+              <Text color="red" mt="xs" size="xs">
+                {error.message}
+              </Text>
+            ) : null}
           </Box>
         );
       }}
     />
   );
-} 
+};

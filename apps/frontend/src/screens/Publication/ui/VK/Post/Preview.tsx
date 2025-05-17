@@ -1,5 +1,5 @@
-import { Stack, Text, Image, SimpleGrid } from '@mantine/core';
-import { BasePreview } from '@shared/ui/preview/BasePreview';
+import { Image, SimpleGrid, Stack, Text } from "@mantine/core";
+import { BasePreview } from "@shared/ui/preview/BasePreview";
 
 interface PreviewProps {
   data: {
@@ -9,34 +9,31 @@ interface PreviewProps {
   };
 }
 
-export function Preview({ data }: PreviewProps) {
-  const imageUrls = data.images.map(image => 
-    image instanceof File ? URL.createObjectURL(image) : image
+export const Preview = ({ data }: PreviewProps) => {
+  const imageUrls = data.images.map((image) =>
+    image instanceof File ? URL.createObjectURL(image) : image,
   );
 
   return (
     <BasePreview title="Предпросмотр VK Post">
       <Stack>
-        <Text size="sm" style={{wordWrap: "break-word", whiteSpace: 'pre-wrap'}}>
+        <Text
+          size="sm"
+          style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
+        >
           {data.text}
         </Text>
         {imageUrls.length > 0 && (
           <SimpleGrid cols={Math.min(imageUrls.length, 3)} spacing="xs">
-            {imageUrls.map((url, index) => (
-              <Image
-                key={index}
-                src={url}
-                radius="md"
-                fit="cover"
-                h={200}
-              />
+            {imageUrls.map((url) => (
+              <Image fit="cover" h={200} key={url} radius="md" src={url} />
             ))}
           </SimpleGrid>
         )}
-        <Text size="xs" c="dimmed">
-          Дата публикации: {data.publishDate.toLocaleDateString('ru-RU')}
+        <Text c="dimmed" size="xs">
+          Дата публикации: {data.publishDate.toLocaleDateString("ru-RU")}
         </Text>
       </Stack>
     </BasePreview>
   );
-} 
+};

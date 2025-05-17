@@ -1,6 +1,7 @@
-import { useRef } from 'react';
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
-import { Box, FileInput, Group, Text } from '@mantine/core';
+import { useRef } from "react";
+import { Controller } from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
+import { Box, FileInput, Group, Text } from "@mantine/core";
 
 interface AssetUploadProps<T extends FieldValues> {
   control: Control<T>;
@@ -10,13 +11,13 @@ interface AssetUploadProps<T extends FieldValues> {
   multiple?: boolean;
 }
 
-export function AssetUpload<T extends FieldValues>({ 
-  control, 
-  name, 
-  label, 
+export const AssetUpload = <T extends FieldValues>({
+  control,
+  name,
+  label,
   accept,
-  multiple = false 
-}: AssetUploadProps<T>) {
+  multiple = false,
+}: AssetUploadProps<T>) => {
   const fileInputRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -30,16 +31,25 @@ export function AssetUpload<T extends FieldValues>({
           </Group>
 
           <FileInput
-            ref={fileInputRef}
-            placeholder="Upload file"
-            value={multiple ? (value || []) : (value && typeof value === 'object' && 'type' in value ? value : null)}
-            onChange={(files) => onChange(files)}
-            error={error?.message}
             accept={accept}
+            error={error?.message}
             multiple={multiple}
+            onChange={(files) => {
+              onChange(files);
+            }}
+            placeholder="Upload file"
+            ref={fileInputRef}
+            value={
+              // eslint-disable-next-line no-nested-ternary -- не хочу выносить
+              multiple
+                ? value || []
+                : value && typeof value === "object" && "type" in value
+                  ? value
+                  : null
+            }
           />
         </Box>
       )}
     />
   );
-} 
+};
