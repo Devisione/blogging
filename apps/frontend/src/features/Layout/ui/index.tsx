@@ -32,6 +32,7 @@ const Layout = (props: PropsWithChildren) => {
             style={{
               padding: "12px",
               flex: 1,
+              alignItems: "center",
             }}
           />
         </Flex>

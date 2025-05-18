@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import type { DragEndEvent } from "@dnd-kit/core/dist/types";
+import type { MantineTheme } from "@mantine/core";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -11,34 +13,33 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   ActionIcon,
+  Avatar,
+  Box,
   Button,
   Card,
-  Checkbox,
   Grid,
   Group,
   Modal,
+  ScrollArea,
   Stack,
   Tabs,
   Text,
   UnstyledButton,
-  Avatar,
-  rem,
-  MantineTheme,
-  Badge,
-  Box,
-  ScrollArea,
 } from "@mantine/core";
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconBrandTelegram,
   IconBrandVk,
   IconBrandYoutube,
-  IconPlus,
-  IconX,
   IconMessage,
-  IconVideo,
   IconPhotoVideo,
+  IconPlus,
+  IconVideo,
+  IconX,
 } from "@tabler/icons-react";
+import { useUnit } from "effector-react";
+import { $userState } from "@entities/User/model/store";
+import type { Channel as UserChannel } from "@entities/User/model/types";
 import classes from "./index.module.css";
 import { TelegramPostForm } from "./Telegram/Post";
 import { TelegramStoriesForm } from "./Telegram/Stories";
@@ -52,9 +53,9 @@ import { YoutubeStoriesForm } from "./YouTube/Stories";
 import { YoutubeVideoForm } from "./YouTube/Video";
 
 enum Platform {
-  YouTube = "YouTube",
-  VK = "VK",
-  Telegram = "Telegram",
+  YouTube = "youtube",
+  VK = "vk",
+  Telegram = "telegram",
 }
 
 enum ContentType {
@@ -86,15 +87,19 @@ const CONTENT_TYPE_ICONS = {
 
 // Определяем доступные типы контента для каждой платформы
 const PLATFORM_CAPABILITIES = {
-  [Platform.YouTube]: new Set([ContentType.VIDEO, ContentType.SHORT]),
-  [Platform.VK]: new Set([ContentType.POST, ContentType.VIDEO, ContentType.STORIES]),
-  [Platform.Telegram]: new Set([ContentType.POST, ContentType.STORIES]),
+  [Platform.YouTube]: new Set([
+    ContentType.VIDEO,
+    ContentType.SHORT,
+    ContentType.POST,
+    ContentType.STORIES,
+  ]),
+  [Platform.VK]: new Set([
+    ContentType.POST,
+    ContentType.VIDEO,
+    ContentType.STORIES,
+  ]),
+  [Platform.Telegram]: new Set([ContentType.POST]),
 } as const;
-
-// Функция для проверки доступности типа контента для платформы
-const isContentTypeAvailableForPlatform = (platform: Platform, contentType: ContentType): boolean => {
-  return PLATFORM_CAPABILITIES[platform].has(contentType);
-};
 
 type ContentMap = Record<Platform, Partial<Record<ContentType, JSX.Element>>>;
 
@@ -118,46 +123,16 @@ const PLATFORM_CONTENT: ContentMap = {
   },
 };
 
-interface Channel {
-  id: string;
-  name: string;
-  avatar: string;
+interface Channel extends Omit<UserChannel, "channelId"> {
   platform: Platform;
 }
 
-// Временные данные для демонстрации, потом нужно будет заменить на реальные
-const MOCK_CHANNELS: Channel[] = [
-  {
-    id: '1',
-    name: 'Мой YouTube канал',
-    avatar: 'https://picsum.photos/32',
-    platform: Platform.YouTube
-  },
-  {
-    id: '2',
-    name: 'Личный блог',
-    avatar: 'https://picsum.photos/32',
-    platform: Platform.YouTube
-  },
-  {
-    id: '3',
-    name: 'Группа ВКонтакте',
-    avatar: 'https://picsum.photos/32',
-    platform: Platform.VK
-  },
-  {
-    id: '4',
-    name: 'Паблик ВКонтакте',
-    avatar: 'https://picsum.photos/32',
-    platform: Platform.VK
-  },
-  {
-    id: '5',
-    name: 'Telegram канал',
-    avatar: 'https://picsum.photos/32',
-    platform: Platform.Telegram
-  }
-];
+// Remove MOCK_CHANNELS since we're using real data now
+const PLATFORM_COLORS = {
+  [Platform.YouTube]: "#FF0000", // YouTube Red
+  [Platform.VK]: "#0077FF", // VK Blue
+  [Platform.Telegram]: "#229ED9", // Telegram Blue
+} as const;
 
 interface PublicationTarget {
   channelId: string;
@@ -170,38 +145,28 @@ interface Publication {
   targets: PublicationTarget[];
 }
 
-const PLATFORM_COLORS = {
-  [Platform.YouTube]: '#FF0000', // YouTube Red
-  [Platform.VK]: '#0077FF', // VK Blue
-  [Platform.Telegram]: '#229ED9', // Telegram Blue
-} as const;
-
-const PlatformCard = ({ platform, onSelect }: { platform: Platform; onSelect: (platform: Platform) => void }) => {
-  const Icon = PLATFORM_ICONS[platform];
-  
-  return (
-    <UnstyledButton onClick={() => onSelect(platform)} style={{ width: '100%' }}>
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Group justify="center">
-          <Icon size={32} />
-          <Text size="lg">{platform}</Text>
-        </Group>
-      </Card>
-    </UnstyledButton>
-  );
-};
-
-const ContentTypeCard = ({ type, onSelect }: { type: ContentType; onSelect: (type: ContentType) => void }) => {
+const ContentTypeCard = ({
+  type,
+  onSelect,
+}: {
+  type: ContentType;
+  onSelect: (type: ContentType) => void;
+}) => {
   const Icon = CONTENT_TYPE_ICONS[type];
-  
+
   // Подсчитываем, в скольких платформах доступен этот тип контента
   const availablePlatforms = Object.entries(PLATFORM_CAPABILITIES)
     .filter(([_, types]) => types.has(type))
     .map(([platform]) => platform as Platform);
-  
+
   return (
-    <UnstyledButton onClick={() => onSelect(type)} style={{ width: '100%' }}>
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <UnstyledButton
+      onClick={() => {
+        onSelect(type);
+      }}
+      style={{ width: "100%" }}
+    >
+      <Card padding="lg" radius="md" shadow="sm" withBorder>
         <Stack align="center" gap="xs">
           <Icon size={32} />
           <Text size="lg">{CONTENT_TYPE_LABELS[type]}</Text>
@@ -217,36 +182,42 @@ const ContentTypeCard = ({ type, onSelect }: { type: ContentType; onSelect: (typ
   );
 };
 
-const ChannelAvatar = ({ channel, selected = false }: { channel: Channel; selected?: boolean }) => {
+const ChannelAvatar = ({
+  channel,
+  selected = false,
+}: {
+  channel: Channel;
+  selected?: boolean;
+}) => {
   const PlatformIcon = PLATFORM_ICONS[channel.platform];
   return (
-    <Box pos="relative" p={4}>
+    <Box p={4} pos="relative">
       <Avatar
-        src={channel.avatar}
-        size="md"
         radius="xl"
-        title={channel.name}
+        size="md"
+        src={channel.avatarUrl}
         style={{
-          border: selected ? '2px solid var(--mantine-color-blue-6)' : 'none',
+          border: selected ? "2px solid var(--mantine-color-blue-6)" : "none",
           opacity: selected ? 1 : 0.7,
         }}
+        title={channel.name}
       />
       <Box
         pos="absolute"
-        top={0}
         right={0}
         style={{
           background: PLATFORM_COLORS[channel.platform],
-          borderRadius: '50%',
-          width: '16px',
-          height: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 4px rgba(0,0,0,0.1)',
+          borderRadius: "50%",
+          width: "16px",
+          height: "16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 0 4px rgba(0,0,0,0.1)",
         }}
+        top={0}
       >
-        <PlatformIcon size={12} style={{ flexShrink: 0, color: 'white' }} />
+        <PlatformIcon size={12} style={{ flexShrink: 0, color: "white" }} />
       </Box>
     </Box>
   );
@@ -261,32 +232,86 @@ const ChannelSelector = ({
   selectedChannels: string[];
   onChannelToggle: (channelId: string, platform: Platform) => void;
 }) => {
-  // Группируем каналы по платформам
-  const availableChannels = MOCK_CHANNELS.filter(channel => 
-    PLATFORM_CAPABILITIES[channel.platform].has(contentType)
+  const userState = useUnit($userState);
+  const channels = userState.data?.channels || [];
+
+  // Filter channels based on content type compatibility and map to our Channel type
+  const availableChannels = channels
+    .map((channel) => ({
+      ...channel,
+      platform: channel.type.toLowerCase() as Platform,
+    }))
+    .filter((channel) => {
+      const platformCapabilities = PLATFORM_CAPABILITIES[channel.platform];
+      return platformCapabilities.has(contentType) || false;
+    });
+
+  // Group channels by platform for better organization
+  const channelsByPlatform = availableChannels.reduce<
+    Record<Platform, Channel[]>
+  >(
+    (acc, channel) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- тут всё ок
+      if (!acc[channel.platform]) {
+        acc[channel.platform] = [];
+      }
+      acc[channel.platform].push(channel);
+      return acc;
+    },
+    // eslint-disable-next-line -- всё ок
+    {} as Record<Platform, Channel[]>,
   );
 
   return (
     <ScrollArea>
-      <Group gap="sm" wrap="nowrap">
-        {availableChannels.map((channel) => (
-          <UnstyledButton
-            key={channel.id}
-            onClick={() => onChannelToggle(channel.id, channel.platform)}
-            style={(theme) => ({
-              transition: 'transform 150ms ease',
-              '&:hover': {
-                transform: 'scale(1.05)',
-              }
-            })}
-          >
-            <ChannelAvatar 
-              channel={channel} 
-              selected={selectedChannels.includes(channel.id)} 
-            />
-          </UnstyledButton>
-        ))}
-      </Group>
+      <Stack gap="md">
+        {(Object.entries(channelsByPlatform) as [Platform, Channel[]][]).map(
+          ([platform, platformChannels]) => (
+            <div key={platform}>
+              <Text fw={500} mb="xs" size="sm">
+                {platform}
+              </Text>
+              <Group gap="sm" wrap="nowrap">
+                {platformChannels.map((channel) => {
+                  const platformCapabilities =
+                    PLATFORM_CAPABILITIES[channel.platform];
+                  const isAvailable =
+                    platformCapabilities.has(contentType) || false;
+
+                  return (
+                    <UnstyledButton
+                      key={channel.id}
+                      onClick={() => {
+                        if (isAvailable) {
+                          onChannelToggle(channel.id, channel.platform);
+                        }
+                      }}
+                      style={() => ({
+                        opacity: isAvailable ? 1 : 0.5,
+                        cursor: isAvailable ? "pointer" : "not-allowed",
+                        transition: "transform 150ms ease",
+                        "&:hover": {
+                          transform: isAvailable ? "scale(1.05)" : "none",
+                        },
+                      })}
+                      title={
+                        !isAvailable
+                          ? `${contentType} недоступен для ${platform}`
+                          : undefined
+                      }
+                    >
+                      <ChannelAvatar
+                        channel={channel}
+                        selected={selectedChannels.includes(channel.id)}
+                      />
+                    </UnstyledButton>
+                  );
+                })}
+              </Group>
+            </div>
+          ),
+        )}
+      </Stack>
     </ScrollArea>
   );
 };
@@ -300,9 +325,13 @@ const SortableTab = ({
   onRemove: (id: string) => void;
   active: boolean;
 }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: publication.id,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: publication.id,
+    });
+
+  const userState = useUnit($userState);
+  const channels = userState.data?.channels || [];
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -310,26 +339,33 @@ const SortableTab = ({
   };
 
   const ContentTypeIcon = CONTENT_TYPE_ICONS[publication.contentType];
-  
-  const selectedChannelsInfo = MOCK_CHANNELS.filter(channel => 
-    publication.targets.some(target => target.channelId === channel.id)
-  );
+
+  const selectedChannelsInfo = channels
+    .filter((channel) =>
+      publication.targets.some((target) => target.channelId === channel.id),
+    )
+    .map((channel) => ({
+      ...channel,
+      platform: channel.type.toLowerCase() as Platform,
+    }));
 
   return (
     <div ref={setNodeRef} style={style}>
-      <Tabs.Tab 
-        value={publication.id} 
-        w="100%"
+      <Tabs.Tab
         style={(theme: MantineTheme) => ({
-          backgroundColor: active ? theme.colors.blue[0] : 'transparent',
-          '&:hover': {
-            backgroundColor: active ? theme.colors.blue[1] : theme.colors.gray[0],
+          backgroundColor: active ? theme.colors.blue[0] : "transparent",
+          "&:hover": {
+            backgroundColor: active
+              ? theme.colors.blue[1]
+              : theme.colors.gray[0],
           },
-          transition: 'background-color 150ms ease',
+          transition: "background-color 150ms ease",
           padding: theme.spacing.xs,
           marginBottom: theme.spacing.xs,
           borderRadius: theme.radius.sm,
         })}
+        value={publication.id}
+        w="100%"
       >
         <Stack gap="xs" w="100%">
           <Group gap="xs" justify="space-between" w="100%">
@@ -338,19 +374,19 @@ const SortableTab = ({
                 ⠿
               </span>
               <ContentTypeIcon size={20} style={{ flexShrink: 0 }} />
-              <Text size="sm" fw={500} lineClamp={1}>
+              <Text fw={500} lineClamp={1} size="sm">
                 {CONTENT_TYPE_LABELS[publication.contentType]}
               </Text>
             </Group>
             <ActionIcon
               color="red"
+              ml="xs"
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove(publication.id);
               }}
               size="md"
               variant="subtle"
-              ml="xs"
             >
               <IconX size={16} />
             </ActionIcon>
@@ -358,7 +394,7 @@ const SortableTab = ({
           {selectedChannelsInfo.length > 0 && (
             <Group gap="xs" ml={24}>
               {selectedChannelsInfo.map((channel) => (
-                <ChannelAvatar key={channel.id} channel={channel} selected />
+                <ChannelAvatar channel={channel} key={channel.id} selected />
               ))}
             </Group>
           )}
@@ -376,13 +412,15 @@ const SelectedChannelsHeader = ({
   onChannelToggle: (channelId: string, platform: Platform) => void;
 }) => {
   return (
-    <Card withBorder mb="md">
+    <Card mb="md" withBorder>
       <Stack gap="xs">
-        <Text fw={500} size="sm">Выберите каналы для публикации</Text>
+        <Text fw={500} size="sm">
+          Выберите каналы для публикации
+        </Text>
         <ChannelSelector
           contentType={publication.contentType}
-          selectedChannels={publication.targets.map(t => t.channelId)}
           onChannelToggle={onChannelToggle}
+          selectedChannels={publication.targets.map((t) => t.channelId)}
         />
       </Stack>
     </Card>
@@ -400,20 +438,20 @@ const AddPublicationModal = ({
 }) => {
   return (
     <Modal
-      opened={opened}
       onClose={onClose}
-      title="Выберите тип контента"
+      opened={opened}
       size="lg"
+      title="Выберите тип контента"
     >
       <Grid>
         {Object.values(ContentType).map((type) => (
-          <Grid.Col span={4} key={type}>
+          <Grid.Col key={type} span={4}>
             <ContentTypeCard
-              type={type}
               onSelect={(selectedType) => {
                 onAdd(selectedType);
                 onClose();
               }}
+              type={type}
             />
           </Grid.Col>
         ))}
@@ -424,7 +462,9 @@ const AddPublicationModal = ({
 
 export const Publication = () => {
   const [publications, setPublications] = useState<Publication[]>([]);
-  const [activePublication, setActivePublication] = useState<string | null>(null);
+  const [activePublication, setActivePublication] = useState<string | null>(
+    null,
+  );
   const [opened, { open, close }] = useDisclosure(false);
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -456,80 +496,109 @@ export const Publication = () => {
     }
   };
 
-  const handleChannelToggle = (publicationId: string, channelId: string, platform: Platform) => {
-    setPublications(publications.map(pub => {
-      if (pub.id !== publicationId) return pub;
-      
-      const hasChannel = pub.targets.some(target => target.channelId === channelId);
-      const newTargets = hasChannel
-        ? pub.targets.filter(target => target.channelId !== channelId)
-        : [...pub.targets, { channelId, platform }];
-      
-      return { ...pub, targets: newTargets };
-    }));
+  const handleChannelToggle = (
+    publicationId: string,
+    channelId: string,
+    platform: Platform,
+  ) => {
+    setPublications(
+      publications.map((pub) => {
+        if (pub.id !== publicationId) return pub;
+
+        const hasChannel = pub.targets.some(
+          (target) => target.channelId === channelId,
+        );
+        const newTargets = hasChannel
+          ? pub.targets.filter((target) => target.channelId !== channelId)
+          : [...pub.targets, { channelId, platform }];
+
+        return { ...pub, targets: newTargets };
+      }),
+    );
   };
 
   return (
-    <Tabs
-      value={activePublication}
-      onChange={setActivePublication}
-      orientation="vertical"
-      style={(theme: MantineTheme) => ({
-        '.mantine-Tabs-panel': {
-          paddingLeft: theme.spacing.md,
-        }
-      })}
-      classNames={{
-        tabLabel: classes.tabLabel
-      }}
-    >
-      <Group align="flex-start" style={{ flex: 1 }}>
-        <Stack gap="md" w={300}>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={open}
-            fullWidth
-          >
-            Добавить публикацию
+    <>
+      {createPortal(
+        <>
+          <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
+            Создание публикации
+          </h1>
+          <Button style={{ marginLeft: "12px" }} variant="default">
+            Опубликовать
           </Button>
-          
-          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={publications} strategy={verticalListSortingStrategy}>
-              <Tabs.List>
-                {publications.map((publication) => (
-                  <SortableTab
-                    key={publication.id}
-                    publication={publication}
-                    onRemove={removePublication}
-                    active={publication.id === activePublication}
-                  />
-                ))}
-              </Tabs.List>
-            </SortableContext>
-          </DndContext>
-        </Stack>
+          <Button style={{ marginLeft: "12px" }}>Запланировать</Button>
+        </>,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть
+        document.querySelector("#header-portal")!,
+      )}
+      <Tabs
+        classNames={{
+          tabLabel: classes.tabLabel,
+        }}
+        onChange={setActivePublication}
+        orientation="vertical"
+        style={(theme: MantineTheme) => ({
+          ".mantine-Tabs-panel": {
+            paddingLeft: theme.spacing.md,
+          },
+        })}
+        value={activePublication}
+      >
+        <Group align="flex-start" style={{ flex: 1 }}>
+          <Stack gap="md" w={300}>
+            <Button
+              fullWidth
+              leftSection={<IconPlus size={16} />}
+              onClick={open}
+            >
+              Добавить публикацию
+            </Button>
 
-        <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
-          {publications.map((publication) => (
-            <Tabs.Panel key={publication.id} value={publication.id}>
-              <SelectedChannelsHeader
-                publication={publication}
-                onChannelToggle={(channelId, platform) => 
-                  handleChannelToggle(publication.id, channelId, platform)
-                }
-              />
-              {PLATFORM_CONTENT[Platform.YouTube][publication.contentType]}
-            </Tabs.Panel>
-          ))}
-        </Stack>
-      </Group>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={publications}
+                strategy={verticalListSortingStrategy}
+              >
+                <Tabs.List>
+                  {publications.map((publication) => (
+                    <SortableTab
+                      active={publication.id === activePublication}
+                      key={publication.id}
+                      onRemove={removePublication}
+                      publication={publication}
+                    />
+                  ))}
+                </Tabs.List>
+              </SortableContext>
+            </DndContext>
+          </Stack>
 
-      <AddPublicationModal
-        opened={opened}
-        onClose={close}
-        onAdd={addPublication}
-      />
-    </Tabs>
+          <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
+            {publications.map((publication) => (
+              <Tabs.Panel key={publication.id} value={publication.id}>
+                <SelectedChannelsHeader
+                  onChannelToggle={(channelId, platform) => {
+                    handleChannelToggle(publication.id, channelId, platform);
+                  }}
+                  publication={publication}
+                />
+                {PLATFORM_CONTENT[Platform.YouTube][publication.contentType]}
+              </Tabs.Panel>
+            ))}
+          </Stack>
+        </Group>
+
+        <AddPublicationModal
+          onAdd={addPublication}
+          onClose={close}
+          opened={opened}
+        />
+      </Tabs>
+    </>
   );
 };
 
