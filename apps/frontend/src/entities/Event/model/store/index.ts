@@ -17,14 +17,23 @@ const $events = createQuery({
 
 const $preparedCalendarEvents = combine($events.$data, (events) => {
   if (events) {
+    // Create a Map of potential parent events for O(1) lookup
+    const parentsMap = new Map(
+      events.map(event => [event.id, event])
+    );
+
     return events.map((event) => {
       const endDate = new Date(event.date);
       endDate.setMinutes(event.date.getMinutes() + event.duration);
+
+      // O(1) lookup instead of O(n) find operation
+      const parent = event.parentId ? parentsMap.get(event.parentId) : undefined;
 
       return {
         ...event,
         start: event.date,
         end: endDate,
+        parent,
       };
     });
   }

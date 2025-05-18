@@ -2,21 +2,30 @@ import React from "react";
 import { Text } from "@mantine/core";
 import { format } from "date-fns";
 import { getHumanReadableDifference } from "@shared/utils/date";
+import { mergeWithParent } from "@shared/utils/object";
+import type { Event } from "@entities/Event/model/types";
 
-const MonthEvent = ({
-  event,
-}: {
-  event: { start: string; end: string; title: string };
-}) => {
-  const startTime = format(event.start, "HH:mm"); // или 'hh:mm A' для 12-часового формата
+export type EventWithDates = Event & {
+  start: string;
+  end: string;
+  parent?: Event;
+};
+
+const MonthEvent = ({ event }: { event: EventWithDates }) => {
+  const preparedEvent = mergeWithParent(event, event.parent);
+
+  const startTime = format(preparedEvent.date, "HH:mm");
+
+  const endDate = new Date(preparedEvent.date);
+  endDate.setMinutes(preparedEvent.date.getMinutes() + preparedEvent.duration);
 
   return (
     <span>
       <Text component="span" size="xs">
         {startTime} -{" "}
-        {getHumanReadableDifference(new Date(event.start), new Date(event.end))}
+        {getHumanReadableDifference(new Date(event.date), new Date(endDate))}
       </Text>{" "}
-      {event.title}
+      {preparedEvent.title}
     </span>
   );
 };

@@ -1,0 +1,187 @@
+import { useState } from "react";
+import {
+  Anchor,
+  Avatar,
+  Button,
+  Card,
+  Container,
+  Group,
+  Modal,
+  Paper,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import {
+  IconBrandTelegram,
+  IconBrandVk,
+  IconBrandYoutube,
+  IconExternalLink,
+} from "@tabler/icons-react";
+import { useUnit } from "effector-react";
+import { $userState } from "@entities/User/model/store";
+import type { Channel } from "@entities/User/model/types";
+
+interface TelegramModalProps {
+  opened: boolean;
+  onClose: () => void;
+}
+
+const PLATFORM_ICONS = {
+  youtube: IconBrandYoutube,
+  vk: IconBrandVk,
+  telegram: IconBrandTelegram,
+};
+
+const TelegramModal = ({ opened, onClose }: TelegramModalProps) => {
+  const [apiToken, setApiToken] = useState("");
+  const [channelName, setChannelName] = useState("");
+
+  const handleSubmit = () => {
+    // TODO: Implement Telegram channel connection logic
+    console.log("Connecting Telegram channel:", { apiToken, channelName });
+    onClose();
+  };
+
+  return (
+    <Modal onClose={onClose} opened={opened} title="Подключить Telegram канал">
+      <Stack>
+        <TextInput
+          label="API Token"
+          onChange={(e) => {
+            setApiToken(e.target.value);
+          }}
+          placeholder="Введите API token"
+          value={apiToken}
+        />
+        <TextInput
+          label="Название канала"
+          onChange={(e) => {
+            setChannelName(e.target.value);
+          }}
+          placeholder="Введите название канала"
+          value={channelName}
+        />
+        <Button onClick={handleSubmit}>Подключить</Button>
+      </Stack>
+    </Modal>
+  );
+};
+
+const ChannelCard = ({ channel }: { channel: Channel }) => {
+  // @ts-expect-error -- да пофиг
+  const PlatformIcon = PLATFORM_ICONS[channel.type] || null;
+  console.log(channel.type);
+
+  return (
+    <Card p="md" radius="md" shadow="sm" withBorder>
+      <Group>
+        <Avatar radius="xl" size="lg" src={channel.avatarUrl}>
+          {PlatformIcon ? <PlatformIcon size={24} /> : null}
+        </Avatar>
+        <div style={{ flex: 1 }}>
+          <Text fw={500} size="lg">
+            {channel.name}
+          </Text>
+          <Text c="dimmed" size="sm">
+            {channel.type}
+          </Text>
+        </div>
+      </Group>
+    </Card>
+  );
+};
+
+const ProfileScreen = () => {
+  const { data: user } = useUnit($userState);
+  const [telegramOpened, { open: openTelegram, close: closeTelegram }] =
+    useDisclosure(false);
+
+  if (!user) return null;
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  return (
+    <Container py="xl" size="md">
+      <Paper p="xl" radius="md" shadow="xs">
+        <Stack>
+          <Group>
+            <Avatar alt={user.name} radius="xl" size="xl" />
+            <div>
+              <Title order={2}>{user.name}</Title>
+              <Text c="dimmed">{user.email}</Text>
+            </div>
+          </Group>
+
+          <div>
+            <Title mb="md" order={3}>
+              Подключенные каналы
+            </Title>
+            <Stack>
+              <Group>
+                <Anchor href={`${backendUrl}/channels/google`} target="_blank">
+                  <Button
+                    leftSection={<IconBrandYoutube size={20} />}
+                    rightSection={<IconExternalLink size={16} />}
+                    variant={
+                      user.channels.some((ch) => ch.type === "YOUTUBE")
+                        ? "light"
+                        : "filled"
+                    }
+                  >
+                    {user.channels.some((ch) => ch.type === "YOUTUBE")
+                      ? "YouTube подключен"
+                      : "Подключить YouTube"}
+                  </Button>
+                </Anchor>
+                <Anchor href={`${backendUrl}/channels/vk`} target="_blank">
+                  <Button
+                    leftSection={<IconBrandVk size={20} />}
+                    rightSection={<IconExternalLink size={16} />}
+                    variant={
+                      user.channels.some((ch) => ch.type === "VK")
+                        ? "light"
+                        : "filled"
+                    }
+                  >
+                    {user.channels.some((ch) => ch.type === "VK")
+                      ? "VK подключен"
+                      : "Подключить VK"}
+                  </Button>
+                </Anchor>
+                <Button
+                  leftSection={<IconBrandTelegram size={20} />}
+                  onClick={openTelegram}
+                  variant={
+                    user.channels.some((ch) => ch.type === "TELEGRAM")
+                      ? "light"
+                      : "filled"
+                  }
+                >
+                  {user.channels.some((ch) => ch.type === "TELEGRAM")
+                    ? "Telegram подключен"
+                    : "Подключить Telegram"}
+                </Button>
+              </Group>
+
+              {user.channels.length > 0 && (
+                <Stack>
+                  <Text fw={500}>Активные каналы:</Text>
+                  {user.channels.map((channel) => (
+                    <ChannelCard channel={channel} key={channel.id} />
+                  ))}
+                </Stack>
+              )}
+            </Stack>
+          </div>
+        </Stack>
+      </Paper>
+
+      <TelegramModal onClose={closeTelegram} opened={telegramOpened} />
+    </Container>
+  );
+};
+
+export default ProfileScreen;

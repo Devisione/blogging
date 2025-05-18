@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import type { DatesRangeValue, DateValue } from "@mantine/dates";
 import {
   Button,
   Checkbox,
@@ -10,6 +11,7 @@ import {
 } from "@mantine/core";
 import { DatePickerInput, TimeInput } from "@mantine/dates";
 import { format, getDay, set, startOfDay } from "date-fns";
+import { mergeWithParent } from "@shared/utils/object";
 import type { Event } from "@entities/Event/model/types";
 
 interface EventModalProps {
@@ -34,19 +36,43 @@ const DAYS = [
 const EventModal = ({
   modalOpen,
   setModalOpen,
-  eventData,
+  eventData: event,
   setEventData,
   saveEvent,
   deleteEvent,
 }: EventModalProps) => {
+  const eventData = mergeWithParent(event, event.parent);
+
+  const [range, setRange] = useState<[DateValue, DateValue]>([null, null]);
+
+  useEffect(() => {
+    setRange([
+      eventData.recurrenceStart || null,
+      eventData.recurrenceEnd || null,
+    ]);
+  }, [eventData.recurrenceStart, eventData.recurrenceEnd]);
+
+  console.log(range);
+
+  const updateRange = (value: DatesRangeValue) => {
+    setRange(value);
+    setEventData({
+      ...eventData,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё ок
+      recurrenceStart: value[0]!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё ок
+      recurrenceEnd: value[1]!,
+    });
+  };
+
   // Функция для получения дня недели (0 - воскресенье, 1 - понедельник и т.д.)
   const getDayOfWeek = (date: Date) => getDay(date);
 
   // Обработчик изменения времени начала события
   const handleStartTimeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    innerEvent: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const time = event.target.value;
+    const time = innerEvent.target.value;
     const [hours, minutes] = time.split(":").map(Number);
     if (eventData.recurrenceStart) {
       const newStartTime = set(eventData.recurrenceStart, { hours, minutes });
@@ -187,6 +213,15 @@ const EventModal = ({
             onChange={handleRepeatChange}
             value={eventData.recurrenceType}
           />
+
+          {eventData.recurrenceType !== "none" && (
+            <DatePickerInput
+              label="Период повторения"
+              onChange={updateRange}
+              type="range"
+              value={range}
+            />
+          )}
 
           {eventData.recurrenceType === "weekly" && (
             <Checkbox.Group

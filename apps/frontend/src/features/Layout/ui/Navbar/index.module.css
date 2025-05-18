@@ -1,6 +1,11 @@
 .navbar {
+    width: rem(300px);
+    height: 100vh;
+    padding: var(--mantine-spacing-md);
     display: flex;
     flex-direction: column;
+    background-color: var(--mantine-color-white);
+    border-right: rem(1px) solid var(--mantine-color-gray-3);
 }
 
 .navbarMain {
@@ -8,9 +13,8 @@
 }
 
 .footer {
+    border-top: rem(1px) solid var(--mantine-color-gray-3);
     padding-top: var(--mantine-spacing-md);
-    margin-top: var(--mantine-spacing-md);
-    border-top: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .link {
@@ -18,34 +22,30 @@
     align-items: center;
     text-decoration: none;
     font-size: var(--mantine-font-size-sm);
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
+    color: var(--mantine-color-gray-7);
     padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
     border-radius: var(--mantine-radius-sm);
     font-weight: 500;
-    transition: background-color 0.2s, color 0.2s;
+    width: 100%;
 }
 
 .link:hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+    background-color: var(--mantine-color-gray-0);
+    color: var(--mantine-color-black);
 }
 
-.link:hover .linkIcon {
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+.link[data-active] {
+    background-color: var(--mantine-color-blue-0);
+    color: var(--mantine-color-blue-7);
 }
 
-.link[data-active="true"] {
-    background-color: var(--mantine-color-blue-light);
-    color: var(--mantine-color-blue-light-color);
-}
-
-.link[data-active="true"] .linkIcon {
-    color: var(--mantine-color-blue-light-color);
+.link[data-active] .linkIcon {
+    color: var(--mantine-color-blue-7);
 }
 
 .linkIcon {
-    color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
+    color: var(--mantine-color-gray-6);
     margin-right: var(--mantine-spacing-sm);
-    width: 25px;
-    height: 25px;
+    width: rem(20px);
+    height: rem(20px);
 }

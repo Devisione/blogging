@@ -10,4 +10,5 @@ export interface Event {
   recurrenceStart?: Date;
   recurrenceEnd?: Date;
   parentId?: string;
+  parent?: Event;
 }

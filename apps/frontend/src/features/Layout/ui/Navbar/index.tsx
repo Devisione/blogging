@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconBellRinging, IconCalendar, IconLogout } from "@tabler/icons-react";
+import { IconBellRinging, IconCalendar, IconLogout, IconUser } from "@tabler/icons-react";
 import { useUnit } from "effector-react";
+import { Avatar, Group, Text } from "@mantine/core";
 import { $userState } from "@entities/User/model/store";
 import classes from "./index.module.css";
 
@@ -12,7 +13,6 @@ const data = [
 
 export const Navbar = () => {
   const pathname = usePathname();
-
   const { data: user } = useUnit($userState);
 
   const links = data.map((item) => (
@@ -34,6 +34,26 @@ export const Navbar = () => {
       <div className={classes.footer}>
         {user ? (
           <>
+            <Link
+              className={classes.link}
+              data-active={pathname === "/profile" || undefined}
+              href="/profile"
+            >
+              <Group gap="sm" style={{ flex: 1 }}>
+                <Avatar 
+                  alt={user.name} 
+                  radius="xl" 
+                  size="sm"
+                >
+                  <IconUser size={20} />
+                </Avatar>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm" truncate="end">
+                    {user.name}
+                  </Text>
+                </div>
+              </Group>
+            </Link>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid -- временно */}
             <a
               className={classes.link}

@@ -138,8 +138,6 @@ const CalendarPage = () => {
     openModal(findedEvent?.date, findedEvent);
   };
 
-  console.log(events);
-
   return (
     <div style={{ height: "calc(100dvh - 92px)" }}>
       {createPortal(
