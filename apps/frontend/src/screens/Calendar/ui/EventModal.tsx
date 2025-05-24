@@ -6,7 +6,6 @@ import {
   Group,
   Modal,
   NumberInput,
-  Select,
   TextInput,
 } from "@mantine/core";
 import { DatePickerInput, TimeInput } from "@mantine/dates";
@@ -93,18 +92,6 @@ const EventModal = ({
     }
   };
 
-  // Обработчик изменения типа повторения
-  const handleRepeatChange = (value: string | null) => {
-    setEventData({
-      ...eventData,
-      recurrenceType: value ? value : "none",
-      recurrenceDays:
-        value === "weekly"
-          ? [DAYS[getDayOfWeek(eventData.date) - 1].value]
-          : [],
-    });
-  };
-
   // Обработчик изменения дней недели для повторяющихся событий
   const handleRepeatDaysChange = (days: string[]) => {
     setEventData({ ...eventData, recurrenceDays: days });
@@ -141,6 +128,23 @@ const EventModal = ({
   }, [eventData]);
 
   const isCreate = Boolean(!eventData.id);
+
+  useEffect(() => {
+    if (modalOpen) {
+      if (
+        eventData.recurrenceType === "weekly" &&
+        !eventData.recurrenceDays?.some(
+          (day) => day === DAYS[getDayOfWeek(eventData.date) - 1].value,
+        )
+      ) {
+        setEventData({
+          ...eventData,
+          recurrenceDays: [DAYS[getDayOfWeek(eventData.date) - 1].value],
+        });
+      }
+    }
+    // eslint-disable-next-line -- так и задумано
+  }, [modalOpen]);
 
   return (
     <Modal
@@ -202,18 +206,6 @@ const EventModal = ({
 
       {isOneDay ? (
         <>
-          <Select
-            data={[
-              { value: "none", label: "Без повторения" },
-              { value: "daily", label: "Ежедневно" },
-              { value: "weekly", label: "Еженедельно" },
-              { value: "monthly", label: "Ежемесячно" },
-            ]}
-            label="Повторение"
-            onChange={handleRepeatChange}
-            value={eventData.recurrenceType}
-          />
-
           {eventData.recurrenceType !== "none" && (
             <DatePickerInput
               label="Период повторения"

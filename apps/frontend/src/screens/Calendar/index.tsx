@@ -3,6 +3,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import type { SlotInfo } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/router";
 import { Button } from "@mantine/core";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { ru } from "date-fns/locale/ru"; // Локализация для календаря
@@ -75,7 +76,7 @@ const CalendarPage = () => {
       recurrenceDays: void 0,
       recurrenceEnd: void 0,
       recurrenceStart: void 0,
-      recurrenceType: "none",
+      recurrenceType: "weekly",
     }),
     [],
   );
@@ -138,6 +139,8 @@ const CalendarPage = () => {
     openModal(findedEvent?.date, findedEvent);
   };
 
+  const router = useRouter();
+
   return (
     <div style={{ height: "calc(100dvh - 92px)" }}>
       {createPortal(
@@ -147,11 +150,20 @@ const CalendarPage = () => {
           </h1>
           <Button
             onClick={() => {
-              openModal(new Date());
+              void router.push("/publication");
             }}
             style={{ marginLeft: "12px" }}
           >
-            Добавить событие
+            Добавить публикацию
+          </Button>
+          <Button
+            onClick={() => {
+              openModal(new Date());
+            }}
+            style={{ marginLeft: "12px" }}
+            variant="default"
+          >
+            Добавить регулярные события
           </Button>
         </>,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть

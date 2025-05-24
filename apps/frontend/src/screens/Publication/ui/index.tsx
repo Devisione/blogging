@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import type { DragEndEvent } from "@dnd-kit/core/dist/types";
+import type { MantineTheme } from "@mantine/core";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -18,7 +19,6 @@ import {
   Card,
   Grid,
   Group,
-  MantineTheme,
   Modal,
   ScrollArea,
   Stack,
