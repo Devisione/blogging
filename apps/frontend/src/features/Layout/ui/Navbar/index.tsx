@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconBellRinging, IconCalendar, IconLogout, IconUser } from "@tabler/icons-react";
-import { useUnit } from "effector-react";
 import { Avatar, Group, Text } from "@mantine/core";
+import { IconCalendar, IconLogout, IconUser } from "@tabler/icons-react";
+import { useUnit } from "effector-react";
 import { $userState } from "@entities/User/model/store";
 import classes from "./index.module.css";
 
-const data = [
-  { link: "/", label: "Главная", icon: IconBellRinging },
-  { link: "/calendar", label: "Календарь", icon: IconCalendar },
-];
+const data = [{ link: "/", label: "Календарь", icon: IconCalendar }];
 
 export const Navbar = () => {
   const pathname = usePathname();
@@ -40,11 +37,7 @@ export const Navbar = () => {
               href="/profile"
             >
               <Group gap="sm" style={{ flex: 1 }}>
-                <Avatar 
-                  alt={user.name} 
-                  radius="xl" 
-                  size="sm"
-                >
+                <Avatar alt={user.name} radius="xl" size="sm">
                   <IconUser size={20} />
                 </Avatar>
                 <div style={{ flex: 1 }}>

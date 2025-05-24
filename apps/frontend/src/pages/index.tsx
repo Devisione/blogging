@@ -1,5 +1,8 @@
-const HomePage = () => {
-  return <div style={{ height: "calc(100dvh - 108px)" }}>main</div>;
+import CalendarScreen from "@screens/Calendar";
+import { withAuthGuard } from "../components/HOCS/withAuthGuard";
+
+const IndexPage = () => {
+  return <CalendarScreen />;
 };
 
-export default HomePage;
+export default withAuthGuard(IndexPage);
