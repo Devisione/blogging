@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import type { DragEndEvent } from "@dnd-kit/core/dist/types";
-import type { MantineTheme } from "@mantine/core";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -19,6 +18,7 @@ import {
   Card,
   Grid,
   Group,
+  MantineTheme,
   Modal,
   ScrollArea,
   Stack,
@@ -26,6 +26,7 @@ import {
   Text,
   UnstyledButton,
 } from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBrandTelegram,
@@ -528,6 +529,7 @@ export const Publication = () => {
             Опубликовать
           </Button>
           <Button style={{ marginLeft: "12px" }}>Запланировать</Button>
+          <DateTimePicker ml={12} placeholder="Дата публикации" />
         </>,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть
         document.querySelector("#header-portal")!,

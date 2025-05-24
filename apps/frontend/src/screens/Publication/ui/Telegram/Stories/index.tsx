@@ -1,7 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { Grid, SegmentedControl } from "@mantine/core";
 import { AssetUpload } from "@shared/ui/forms/AssetUpload";
-import { DatePicker } from "@shared/ui/forms/DatePicker";
 import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
 import { Preview } from "./Preview";
 
@@ -28,11 +27,6 @@ export const TelegramStoriesForm = () => {
   return (
     <Grid w="1040px">
       <Grid.Col span={6}>
-        <DatePicker
-          control={control}
-          label="Дата публикации"
-          name="publishDate"
-        />
         <Controller
           control={control}
           name="isVideo"
