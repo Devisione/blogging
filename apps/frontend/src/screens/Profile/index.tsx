@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Anchor,
   Avatar,
@@ -19,8 +19,10 @@ import {
   IconBrandVk,
   IconBrandYoutube,
   IconExternalLink,
+  IconTrash,
 } from "@tabler/icons-react";
 import { useUnit } from "effector-react";
+import { ChannelApi } from "@entities/Channel/api";
 import { $userState } from "@entities/User/model/store";
 import type { Channel } from "@entities/User/model/types";
 
@@ -73,7 +75,13 @@ const TelegramModal = ({ opened, onClose }: TelegramModalProps) => {
 const ChannelCard = ({ channel }: { channel: Channel }) => {
   // @ts-expect-error -- да пофиг
   const PlatformIcon = PLATFORM_ICONS[channel.type] || null;
-  console.log(channel.type);
+
+  const userState = useUnit($userState);
+
+  const remove = useCallback(async () => {
+    await ChannelApi.removeChannel({ id: channel.id });
+    userState.start();
+  }, [channel.id, userState]);
 
   return (
     <Card p="md" radius="md" shadow="sm" withBorder>
@@ -88,6 +96,17 @@ const ChannelCard = ({ channel }: { channel: Channel }) => {
           <Text c="dimmed" size="sm">
             {channel.type}
           </Text>
+        </div>
+        <div>
+          <Button
+            color="red"
+            onClick={() => {
+              void remove();
+            }}
+            variant="outline"
+          >
+            <IconTrash size={24} />
+          </Button>
         </div>
       </Group>
     </Card>
