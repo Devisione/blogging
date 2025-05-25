@@ -13,7 +13,8 @@ import {
   PLATFORM_CAPABILITIES,
   PLATFORM_ICONS,
 } from "@entities/Channel/config/constants";
-import { ContentType, Platform } from "@entities/Channel/model/types";
+import { ContentType } from "@entities/Channel/model/types";
+import type { Platform } from "@entities/Channel/model/types";
 
 export const AddPublicationModal = ({
   opened,

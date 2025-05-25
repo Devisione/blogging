@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import type { DragEndEvent } from "@dnd-kit/core/dist/types";
 import type { MantineTheme } from "@mantine/core";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -21,33 +21,26 @@ import {
   CONTENT_TYPE_LABELS,
   PLATFORM_CONTENT,
 } from "@entities/Channel/config/constants";
-import { Platform } from "@entities/Channel/model/types";
+import { ContentType, Platform } from "@entities/Channel/model/types";
 import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
-import type { ContentType } from "@entities/Channel/model/types";
 import { AddPublicationModal } from "./AddPublicationModal";
 import { ChannelSelector } from "./ChannelSelector";
 import { Field } from "./Field";
 import classes from "./index.module.css";
-
-interface PublicationTarget {
-  channelId: string;
-  platform: Platform;
-}
-
-interface Publication {
-  id: string;
-  contentType: ContentType;
-  targets: PublicationTarget[];
-}
+import type {
+  PublicationFormValues,
+  Publication as PublicationType,
+  PublicationWithId,
+} from "../model/types";
 
 const SortableTab = ({
   publication,
   onRemove,
   active,
 }: {
-  publication: Publication;
+  publication: PublicationWithId;
   onRemove: (id: string) => void;
   active: boolean;
 }) => {
@@ -64,12 +57,10 @@ const SortableTab = ({
     transition,
   };
 
-  const ContentTypeIcon = CONTENT_TYPE_ICONS[publication.contentType];
+  const ContentTypeIcon = CONTENT_TYPE_ICONS[publication.type];
 
   const selectedChannelsInfo = channels
-    .filter((channel) =>
-      publication.targets.some((target) => target.channelId === channel.id),
-    )
+    .filter((channel) => publication.channels.includes(channel.id))
     .map((channel) => ({
       ...channel,
       platform: channel.type.toLowerCase() as Platform,
@@ -101,7 +92,7 @@ const SortableTab = ({
               </span>
               <ContentTypeIcon size={20} style={{ flexShrink: 0 }} />
               <Text fw={500} lineClamp={1} size="sm">
-                {CONTENT_TYPE_LABELS[publication.contentType]}
+                {CONTENT_TYPE_LABELS[publication.type]}
               </Text>
             </Group>
             <ActionIcon
@@ -131,60 +122,67 @@ const SortableTab = ({
 };
 
 export const Publication = () => {
-  const [publications, setPublications] = useState<Publication[]>([]);
   const [activePublication, setActivePublication] = useState<string | null>(
     null,
   );
   const [opened, { open, close }] = useDisclosure(false);
+  const { control } = useFormContext<PublicationFormValues>();
+
+  const {
+    fields: publications,
+    append,
+    remove,
+    move,
+    update,
+  } = useFieldArray({
+    control,
+    name: "publications",
+  });
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setPublications((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      const oldIndex = publications.findIndex((item) => item.id === active.id);
+      const newIndex = publications.findIndex((item) => item.id === over.id);
+      move(oldIndex, newIndex);
     }
   };
 
   const addPublication = (contentType: ContentType) => {
-    const newPublication = {
-      id: Date.now().toString(),
-      contentType,
-      targets: [],
+    const newPublication: PublicationType = {
+      type: contentType,
+      channels: [],
     };
-    setPublications([...publications, newPublication]);
-    setActivePublication(newPublication.id);
+    append(newPublication);
+    setActivePublication(Date.now().toString());
   };
 
   const removePublication = (id: string) => {
-    setPublications(publications.filter((pub) => pub.id !== id));
-    if (activePublication === id && publications.length > 0) {
-      setActivePublication(publications[0].id);
+    const index = publications.findIndex((pub) => pub.id === id);
+    if (index !== -1) {
+      remove(index);
+      if (activePublication === id && publications.length > 0) {
+        setActivePublication(publications[0].id);
+      }
     }
   };
 
-  const handleChannelToggle = (
-    publicationId: string,
-    channelId: string,
-    platform: Platform,
-  ) => {
-    setPublications(
-      publications.map((pub) => {
-        if (pub.id !== publicationId) return pub;
+  const handleChannelToggle = (publicationId: string, channelId: string) => {
+    const index = publications.findIndex((pub) => pub.id === publicationId);
+    if (index === -1) return;
 
-        const hasChannel = pub.targets.some(
-          (target) => target.channelId === channelId,
-        );
-        const newTargets = hasChannel
-          ? pub.targets.filter((target) => target.channelId !== channelId)
-          : [...pub.targets, { channelId, platform }];
+    const publication = publications[index] as unknown as PublicationWithId;
+    const hasChannel = publication.channels.includes(channelId);
 
-        return { ...pub, targets: newTargets };
-      }),
-    );
+    const newChannels = hasChannel
+      ? publication.channels.filter((ch: string) => ch !== channelId)
+      : [...publication.channels, channelId];
+
+    update(index, {
+      ...publication,
+      channels: newChannels,
+    });
   };
 
   const { data: event } = useUnit($event);
@@ -203,15 +201,14 @@ export const Publication = () => {
           <Field
             disabled={Boolean(event)}
             name="publishDate"
-            render={({ field }) => {
-              return (
-                <DateTimePicker
-                  ml={12}
-                  placeholder="Дата публикации"
-                  {...field}
-                />
-              );
-            }}
+            render={({ field }) => (
+              <DateTimePicker
+                ml={12}
+                placeholder="Дата публикации"
+                {...field}
+                value={field.value instanceof Date ? field.value : new Date()}
+              />
+            )}
           />
         </>,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть
@@ -254,7 +251,7 @@ export const Publication = () => {
                       active={publication.id === activePublication}
                       key={publication.id}
                       onRemove={removePublication}
-                      publication={publication}
+                      publication={publication as unknown as PublicationWithId}
                     />
                   ))}
                 </Tabs.List>
@@ -266,12 +263,12 @@ export const Publication = () => {
             {publications.map((publication) => (
               <Tabs.Panel key={publication.id} value={publication.id}>
                 <ChannelSelector
-                  onChannelToggle={(channelId, platform) => {
-                    handleChannelToggle(publication.id, channelId, platform);
+                  onChannelToggle={(channelId, _platform) => {
+                    handleChannelToggle(publication.id, channelId);
                   }}
-                  publication={publication}
+                  publication={publication as unknown as PublicationWithId}
                 />
-                {PLATFORM_CONTENT[Platform.YouTube][publication.contentType]}
+                {PLATFORM_CONTENT[Platform.YouTube][publication.type]}
               </Tabs.Panel>
             ))}
           </Stack>
