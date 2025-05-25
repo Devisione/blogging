@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Controller } from "react-hook-form";
 import type { DragEndEvent } from "@dnd-kit/core/dist/types";
 import type { MantineTheme } from "@mantine/core";
 import { closestCenter, DndContext } from "@dnd-kit/core";
@@ -41,6 +40,7 @@ import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
 import type { Channel } from "@entities/Channel/model/types";
+import { Field } from "./Field";
 import classes from "./index.module.css";
 
 interface PublicationTarget {
@@ -398,11 +398,10 @@ export const Publication = () => {
             Опубликовать
           </Button>
           <Button style={{ marginLeft: "12px" }}>Запланировать</Button>
-          <Controller
+          <Field
             disabled={Boolean(event)}
             name="publishDate"
             render={({ field }) => {
-              console.log(field);
               return (
                 <DateTimePicker
                   ml={12}
