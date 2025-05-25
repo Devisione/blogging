@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { Controller } from "react-hook-form";
 import type { DragEndEvent } from "@dnd-kit/core/dist/types";
 import type { MantineTheme } from "@mantine/core";
 import { closestCenter, DndContext } from "@dnd-kit/core";
@@ -39,6 +40,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useUnit } from "effector-react";
+import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
 import type { Channel as UserChannel } from "@entities/User/model/types";
 import classes from "./index.module.css";
@@ -518,6 +520,8 @@ export const Publication = () => {
     );
   };
 
+  const { data: event } = useUnit($event);
+
   return (
     <>
       {createPortal(
@@ -529,7 +533,20 @@ export const Publication = () => {
             Опубликовать
           </Button>
           <Button style={{ marginLeft: "12px" }}>Запланировать</Button>
-          <DateTimePicker ml={12} placeholder="Дата публикации" />
+          <Controller
+            disabled={Boolean(event)}
+            name="publishDate"
+            render={({ field }) => {
+              console.log(field);
+              return (
+                <DateTimePicker
+                  ml={12}
+                  placeholder="Дата публикации"
+                  {...field}
+                />
+              );
+            }}
+          />
         </>,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть
         document.querySelector("#header-portal")!,

@@ -3,14 +3,15 @@ import { useRouter } from "next/router";
 import type { NextRouter } from "next/router";
 import type { ParsedUrlQuery } from "node:querystring";
 import { attach, createEvent, createStore, sample } from "effector";
-import { createGate, useGate, useUnit } from "effector-react";
+import { useUnit } from "effector-react";
 
-export const RouterGate = createGate<{ router: NextRouter | null }>();
-const $router = createStore<NextRouter | null>(null, {
-  serialize: "ignore",
-})
-  .on(RouterGate.open, (_, { router }) => router)
-  .reset(RouterGate.close);
+const updateRouterEv = createEvent<NextRouter>();
+const $router = createStore<NextRouter | null>(null).on(
+  updateRouterEv,
+  (_, router) => {
+    return router;
+  },
+);
 
 const $query = createStore<ParsedUrlQuery | undefined | null>(null);
 
@@ -53,20 +54,26 @@ export {
 
 export const RouterInitialize = memo(() => {
   const router = useRouter();
-  const { onChangePage, onInitPage } = useUnit({
+  const { onChangePage, onInitPage, updateRouter } = useUnit({
     onChangePage: onChangePageEv,
     onInitPage: onInitPageEv,
+    updateRouter: updateRouterEv,
   });
 
-  useGate(RouterGate, { router });
+  useEffect(() => {
+    if (router.isReady) {
+      updateRouter(router);
+      onInitPage();
+    }
+  }, [onInitPage, router, updateRouter]);
 
   useEffect(() => {
-    onInitPage();
-  }, [onInitPage]);
+    if (router.isReady) {
+      updateRouter(router);
+      onChangePage(router.pathname);
+    }
+  }, [onChangePage, router, router.pathname, updateRouter]);
 
-  useEffect(() => {
-    onChangePage(router.pathname);
-  }, [onChangePage, router.pathname]);
   return null;
 });
 

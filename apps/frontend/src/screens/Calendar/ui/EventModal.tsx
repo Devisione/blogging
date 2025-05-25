@@ -51,8 +51,6 @@ const EventModal = ({
     ]);
   }, [eventData.recurrenceStart, eventData.recurrenceEnd]);
 
-  console.log(range);
-
   const updateRange = (value: DatesRangeValue) => {
     setRange(value);
     setEventData({
@@ -145,6 +143,8 @@ const EventModal = ({
     }
     // eslint-disable-next-line -- так и задумано
   }, [modalOpen]);
+
+  if (!modalOpen) return null;
 
   return (
     <Modal
