@@ -1,5 +1,5 @@
 import CalendarScreen from "@screens/Calendar";
-import { withAuthGuard } from "../components/HOCS/withAuthGuard";
+import { withAuthGuard } from "@shared/HOCS/withAuthGuard";
 
 const IndexPage = () => {
   return <CalendarScreen />;

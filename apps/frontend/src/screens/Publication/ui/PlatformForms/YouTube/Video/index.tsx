@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { AspectRatio, Grid, Stack, Text } from "@mantine/core";
 import { AssetUpload } from "@shared/ui/forms/AssetUpload";
 import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
-import { Preview } from "../../Preview";
+import { Preview } from "../../../Preview";
 
 interface YoutubeVideoFormData {
   publishDate: Date;

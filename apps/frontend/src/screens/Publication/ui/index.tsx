@@ -14,8 +14,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   ActionIcon,
-  Avatar,
-  Box,
   Button,
   Card,
   Grid,
@@ -29,113 +27,21 @@ import {
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconBrandTelegram,
-  IconBrandVk,
-  IconBrandYoutube,
-  IconMessage,
-  IconPhotoVideo,
-  IconPlus,
-  IconVideo,
-  IconX,
-} from "@tabler/icons-react";
+import { IconPlus, IconX } from "@tabler/icons-react";
 import { useUnit } from "effector-react";
+import {
+  CONTENT_TYPE_ICONS,
+  CONTENT_TYPE_LABELS,
+  PLATFORM_CAPABILITIES,
+  PLATFORM_CONTENT,
+  PLATFORM_ICONS,
+} from "@entities/Channel/config/constants";
+import { ContentType, Platform } from "@entities/Channel/model/types";
+import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
-import type { Channel as UserChannel } from "@entities/User/model/types";
+import type { Channel } from "@entities/Channel/model/types";
 import classes from "./index.module.css";
-import { TelegramPostForm } from "./Telegram/Post";
-import { TelegramStoriesForm } from "./Telegram/Stories";
-import { VKPostForm } from "./VK/Post";
-import { VKShortForm } from "./VK/Short";
-import { VKStoriesForm } from "./VK/Stories";
-import { VKVideoForm } from "./VK/Video";
-import { YoutubePostForm } from "./YouTube/Post";
-import { YoutubeShortsForm } from "./YouTube/Shorts";
-import { YoutubeStoriesForm } from "./YouTube/Stories";
-import { YoutubeVideoForm } from "./YouTube/Video";
-
-enum Platform {
-  YouTube = "youtube",
-  VK = "vk",
-  Telegram = "telegram",
-}
-
-enum ContentType {
-  POST = "post",
-  SHORT = "short",
-  STORIES = "stories",
-  VIDEO = "video",
-}
-
-const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
-  [ContentType.POST]: "Сообщение",
-  [ContentType.SHORT]: "Shorts",
-  [ContentType.STORIES]: "Stories",
-  [ContentType.VIDEO]: "Видео",
-};
-
-const PLATFORM_ICONS = {
-  [Platform.YouTube]: IconBrandYoutube,
-  [Platform.VK]: IconBrandVk,
-  [Platform.Telegram]: IconBrandTelegram,
-};
-
-const CONTENT_TYPE_ICONS = {
-  [ContentType.POST]: IconMessage,
-  [ContentType.SHORT]: IconPhotoVideo,
-  [ContentType.STORIES]: IconPhotoVideo,
-  [ContentType.VIDEO]: IconVideo,
-};
-
-// Определяем доступные типы контента для каждой платформы
-const PLATFORM_CAPABILITIES = {
-  [Platform.YouTube]: new Set([
-    ContentType.VIDEO,
-    ContentType.SHORT,
-    ContentType.POST,
-    ContentType.STORIES,
-  ]),
-  [Platform.VK]: new Set([
-    ContentType.POST,
-    ContentType.VIDEO,
-    ContentType.STORIES,
-  ]),
-  [Platform.Telegram]: new Set([ContentType.POST]),
-} as const;
-
-type ContentMap = Record<Platform, Partial<Record<ContentType, JSX.Element>>>;
-
-// Определяем компоненты для каждой платформы и типа контента
-const PLATFORM_CONTENT: ContentMap = {
-  [Platform.VK]: {
-    [ContentType.POST]: <VKPostForm />,
-    [ContentType.SHORT]: <VKShortForm />,
-    [ContentType.STORIES]: <VKStoriesForm />,
-    [ContentType.VIDEO]: <VKVideoForm />,
-  },
-  [Platform.Telegram]: {
-    [ContentType.POST]: <TelegramPostForm />,
-    [ContentType.STORIES]: <TelegramStoriesForm />,
-  },
-  [Platform.YouTube]: {
-    [ContentType.POST]: <YoutubePostForm />,
-    [ContentType.SHORT]: <YoutubeShortsForm />,
-    [ContentType.STORIES]: <YoutubeStoriesForm />,
-    [ContentType.VIDEO]: <YoutubeVideoForm />,
-  },
-};
-
-interface Channel extends Omit<UserChannel, "channelId"> {
-  platform: Platform;
-}
-
-// Remove MOCK_CHANNELS since we're using real data now
-const PLATFORM_COLORS = {
-  [Platform.YouTube]: "#FF0000", // YouTube Red
-  [Platform.VK]: "#0077FF", // VK Blue
-  [Platform.Telegram]: "#229ED9", // Telegram Blue
-} as const;
 
 interface PublicationTarget {
   channelId: string;
@@ -182,47 +88,6 @@ const ContentTypeCard = ({
         </Stack>
       </Card>
     </UnstyledButton>
-  );
-};
-
-const ChannelAvatar = ({
-  channel,
-  selected = false,
-}: {
-  channel: Channel;
-  selected?: boolean;
-}) => {
-  const PlatformIcon = PLATFORM_ICONS[channel.platform];
-  return (
-    <Box p={4} pos="relative">
-      <Avatar
-        radius="xl"
-        size="md"
-        src={channel.avatarUrl}
-        style={{
-          border: selected ? "2px solid var(--mantine-color-blue-6)" : "none",
-          opacity: selected ? 1 : 0.7,
-        }}
-        title={channel.name}
-      />
-      <Box
-        pos="absolute"
-        right={0}
-        style={{
-          background: PLATFORM_COLORS[channel.platform],
-          borderRadius: "50%",
-          width: "16px",
-          height: "16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 0 4px rgba(0,0,0,0.1)",
-        }}
-        top={0}
-      >
-        <PlatformIcon size={12} style={{ flexShrink: 0, color: "white" }} />
-      </Box>
-    </Box>
   );
 };
 

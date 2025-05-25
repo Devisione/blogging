@@ -1,14 +1,5 @@
-export interface Channel {
-  channelId: string;
-  createdAt: string;
-  description: null;
-  id: string;
-  isActive: true;
-  name: string;
-  type: string;
-  updatedAt: string;
-  avatarUrl: string;
-}
+// eslint-disable-next-line no-restricted-imports -- всё ок
+import type { Channel } from "@entities/Channel/model/types";
 
 export interface User {
   id: string;
