@@ -11,19 +11,7 @@ import {
 } from "@dnd-kit/sortable";
 // eslint-disable-next-line import/no-extraneous-dependencies -- в дев депсах
 import { CSS } from "@dnd-kit/utilities";
-import {
-  ActionIcon,
-  Button,
-  Card,
-  Grid,
-  Group,
-  Modal,
-  ScrollArea,
-  Stack,
-  Tabs,
-  Text,
-  UnstyledButton,
-} from "@mantine/core";
+import { ActionIcon, Button, Group, Stack, Tabs, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconX } from "@tabler/icons-react";
@@ -31,15 +19,15 @@ import { useUnit } from "effector-react";
 import {
   CONTENT_TYPE_ICONS,
   CONTENT_TYPE_LABELS,
-  PLATFORM_CAPABILITIES,
   PLATFORM_CONTENT,
-  PLATFORM_ICONS,
 } from "@entities/Channel/config/constants";
-import { ContentType, Platform } from "@entities/Channel/model/types";
+import { Platform } from "@entities/Channel/model/types";
 import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
-import type { Channel } from "@entities/Channel/model/types";
+import type { ContentType } from "@entities/Channel/model/types";
+import { AddPublicationModal } from "./AddPublicationModal";
+import { ChannelSelector } from "./ChannelSelector";
 import { Field } from "./Field";
 import classes from "./index.module.css";
 
@@ -53,136 +41,6 @@ interface Publication {
   contentType: ContentType;
   targets: PublicationTarget[];
 }
-
-const ContentTypeCard = ({
-  type,
-  onSelect,
-}: {
-  type: ContentType;
-  onSelect: (type: ContentType) => void;
-}) => {
-  const Icon = CONTENT_TYPE_ICONS[type];
-
-  // Подсчитываем, в скольких платформах доступен этот тип контента
-  const availablePlatforms = Object.entries(PLATFORM_CAPABILITIES)
-    .filter(([_, types]) => types.has(type))
-    .map(([platform]) => platform as Platform);
-
-  return (
-    <UnstyledButton
-      onClick={() => {
-        onSelect(type);
-      }}
-      style={{ width: "100%" }}
-    >
-      <Card padding="lg" radius="md" shadow="sm" withBorder>
-        <Stack align="center" gap="xs">
-          <Icon size={32} />
-          <Text size="lg">{CONTENT_TYPE_LABELS[type]}</Text>
-          <Group gap={4}>
-            {availablePlatforms.map((platform) => {
-              const PlatformIcon = PLATFORM_ICONS[platform];
-              return <PlatformIcon key={platform} size={16} />;
-            })}
-          </Group>
-        </Stack>
-      </Card>
-    </UnstyledButton>
-  );
-};
-
-const ChannelSelector = ({
-  contentType,
-  selectedChannels,
-  onChannelToggle,
-}: {
-  contentType: ContentType;
-  selectedChannels: string[];
-  onChannelToggle: (channelId: string, platform: Platform) => void;
-}) => {
-  const userState = useUnit($userState);
-  const channels = userState.data?.channels || [];
-
-  // Filter channels based on content type compatibility and map to our Channel type
-  const availableChannels = channels
-    .map((channel) => ({
-      ...channel,
-      platform: channel.type.toLowerCase() as Platform,
-    }))
-    .filter((channel) => {
-      const platformCapabilities = PLATFORM_CAPABILITIES[channel.platform];
-      return platformCapabilities.has(contentType) || false;
-    });
-
-  // Group channels by platform for better organization
-  const channelsByPlatform = availableChannels.reduce<
-    Record<Platform, Channel[]>
-  >(
-    (acc, channel) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- тут всё ок
-      if (!acc[channel.platform]) {
-        acc[channel.platform] = [];
-      }
-      acc[channel.platform].push(channel);
-      return acc;
-    },
-    // eslint-disable-next-line -- всё ок
-    {} as Record<Platform, Channel[]>,
-  );
-
-  return (
-    <ScrollArea>
-      <Stack gap="md">
-        {(Object.entries(channelsByPlatform) as [Platform, Channel[]][]).map(
-          ([platform, platformChannels]) => (
-            <div key={platform}>
-              <Text fw={500} mb="xs" size="sm">
-                {platform}
-              </Text>
-              <Group gap="sm" wrap="nowrap">
-                {platformChannels.map((channel) => {
-                  const platformCapabilities =
-                    PLATFORM_CAPABILITIES[channel.platform];
-                  const isAvailable =
-                    platformCapabilities.has(contentType) || false;
-
-                  return (
-                    <UnstyledButton
-                      key={channel.id}
-                      onClick={() => {
-                        if (isAvailable) {
-                          onChannelToggle(channel.id, channel.platform);
-                        }
-                      }}
-                      style={() => ({
-                        opacity: isAvailable ? 1 : 0.5,
-                        cursor: isAvailable ? "pointer" : "not-allowed",
-                        transition: "transform 150ms ease",
-                        "&:hover": {
-                          transform: isAvailable ? "scale(1.05)" : "none",
-                        },
-                      })}
-                      title={
-                        !isAvailable
-                          ? `${contentType} недоступен для ${platform}`
-                          : undefined
-                      }
-                    >
-                      <ChannelAvatar
-                        channel={channel}
-                        selected={selectedChannels.includes(channel.id)}
-                      />
-                    </UnstyledButton>
-                  );
-                })}
-              </Group>
-            </div>
-          ),
-        )}
-      </Stack>
-    </ScrollArea>
-  );
-};
 
 const SortableTab = ({
   publication,
@@ -269,62 +127,6 @@ const SortableTab = ({
         </Stack>
       </Tabs.Tab>
     </div>
-  );
-};
-
-const SelectedChannelsHeader = ({
-  publication,
-  onChannelToggle,
-}: {
-  publication: Publication;
-  onChannelToggle: (channelId: string, platform: Platform) => void;
-}) => {
-  return (
-    <Card mb="md" withBorder>
-      <Stack gap="xs">
-        <Text fw={500} size="sm">
-          Выберите каналы для публикации
-        </Text>
-        <ChannelSelector
-          contentType={publication.contentType}
-          onChannelToggle={onChannelToggle}
-          selectedChannels={publication.targets.map((t) => t.channelId)}
-        />
-      </Stack>
-    </Card>
-  );
-};
-
-const AddPublicationModal = ({
-  opened,
-  onClose,
-  onAdd,
-}: {
-  opened: boolean;
-  onClose: () => void;
-  onAdd: (contentType: ContentType) => void;
-}) => {
-  return (
-    <Modal
-      onClose={onClose}
-      opened={opened}
-      size="lg"
-      title="Выберите тип контента"
-    >
-      <Grid>
-        {Object.values(ContentType).map((type) => (
-          <Grid.Col key={type} span={4}>
-            <ContentTypeCard
-              onSelect={(selectedType) => {
-                onAdd(selectedType);
-                onClose();
-              }}
-              type={type}
-            />
-          </Grid.Col>
-        ))}
-      </Grid>
-    </Modal>
   );
 };
 
@@ -463,7 +265,7 @@ export const Publication = () => {
           <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
             {publications.map((publication) => (
               <Tabs.Panel key={publication.id} value={publication.id}>
-                <SelectedChannelsHeader
+                <ChannelSelector
                   onChannelToggle={(channelId, platform) => {
                     handleChannelToggle(publication.id, channelId, platform);
                   }}
