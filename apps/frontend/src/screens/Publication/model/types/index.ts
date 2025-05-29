@@ -1,13 +1,14 @@
 import type { ContentType } from "@entities/Channel/model/types";
 
 export interface Publication {
-  id?: string;
+  id: string;
   type: ContentType;
+  title: string;
+  content: string;
   channels: string[];
-  previewUrl?: string;
+  video?: File;
+  preview?: File;
 }
-
-export type PublicationWithId = Publication & { id: string };
 
 export interface PublicationFormValues {
   publishDate: Date;

@@ -1,23 +1,26 @@
+import { useContext } from "react";
+import { useFormContext } from "react-hook-form";
 import { AspectRatio, Stack, Text } from "@mantine/core";
 import { BasePreview } from "@shared/ui/preview/BasePreview";
+import { FieldPathContext } from "../../../model/store/content";
+import type { PublicationFormValues } from "../../../model/types";
 
-interface PreviewProps {
-  data: {
-    publishDate: Date;
-    video: File | string;
-    thumbnail: File | string;
-    caption: string;
-  };
-}
+export const Preview = () => {
+  const { getValues } = useFormContext<PublicationFormValues>();
+  const { index } = useContext(FieldPathContext);
 
-export const Preview = ({ data }: PreviewProps) => {
+  const publishDate = getValues(`publishDate`);
+  const formData = getValues(`publications.${index}`);
+
   const videoUrl =
-    data.video instanceof File ? URL.createObjectURL(data.video) : data.video;
+    formData.video instanceof File
+      ? URL.createObjectURL(formData.video)
+      : formData.video;
 
   const thumbnailUrl =
-    data.thumbnail instanceof File
-      ? URL.createObjectURL(data.thumbnail)
-      : data.thumbnail;
+    formData.preview instanceof File
+      ? URL.createObjectURL(formData.preview)
+      : formData.preview;
 
   return (
     <BasePreview title="Предпросмотр YouTube Stories">
@@ -38,10 +41,10 @@ export const Preview = ({ data }: PreviewProps) => {
           />
         </AspectRatio>
         <Text size="sm" style={{ wordWrap: "break-word" }}>
-          {data.caption}
+          {formData.content}
         </Text>
         <Text c="dimmed" size="xs">
-          Дата публикации: {data.publishDate.toLocaleDateString("ru-RU")}
+          Дата публикации: {publishDate.toLocaleDateString("ru-RU")}
         </Text>
       </Stack>
     </BasePreview>

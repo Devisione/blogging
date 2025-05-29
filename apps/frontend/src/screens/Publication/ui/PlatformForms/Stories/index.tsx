@@ -1,27 +1,19 @@
-import { useForm } from "react-hook-form";
+import { useContext } from "react";
+import { useFormContext } from "react-hook-form";
 import { Grid } from "@mantine/core";
 import { AssetUpload } from "@shared/ui/forms/AssetUpload";
 import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { FieldPathContext } from "../../../model/store/content";
 import { Preview } from "./Preview";
-
-interface YoutubeStoriesFormData {
-  publishDate: Date;
-  video: File | string;
-  thumbnail: File | string;
-  caption: string;
-}
+import type { PublicationFormValues } from "../../../model/types";
 
 export const YoutubeStoriesForm = () => {
-  const { control, watch } = useForm<YoutubeStoriesFormData>({
-    defaultValues: {
-      publishDate: new Date(),
-      video: "",
-      thumbnail: "",
-      caption: "",
-    },
-  });
+  const { control, getValues } = useFormContext<PublicationFormValues>();
+  const { index } = useContext(FieldPathContext);
 
-  const formData = watch();
+  const formData = getValues(`publications.${index}`);
+
+  console.log(formData);
 
   return (
     <Grid w="1040px">
@@ -30,23 +22,23 @@ export const YoutubeStoriesForm = () => {
           accept="video/*"
           control={control}
           label="Видео"
-          name="video"
+          name={`publications.${index}.video`}
         />
         <AssetUpload
           accept="image/*"
           control={control}
           label="Обложка"
-          name="thumbnail"
+          name={`publications.${index}.preview`}
         />
         <RichTextEditor
           control={control}
           label="Подпись"
-          name="caption"
+          name={`publications.${index}.content`}
           toolbar={false}
         />
       </Grid.Col>
       <Grid.Col span={6}>
-        <Preview data={formData} />
+        <Preview />
       </Grid.Col>
     </Grid>
   );

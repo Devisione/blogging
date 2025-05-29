@@ -1,0 +1,18 @@
+import type { ContentType } from "../../../Channel/model/types";
+
+export interface PublicationGroup {
+  id: string;
+  name: string;
+  status: string;
+  publications: {
+    id: string;
+    content: string;
+    groupId: string;
+    options: object;
+    type: ContentType;
+    preview_url?: string;
+    title?: string;
+    video_url?: string;
+    channels: string[];
+  }[];
+}

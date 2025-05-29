@@ -16,15 +16,17 @@ import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import { useUnit } from "effector-react";
+import { v4 as uuidv4 } from "uuid";
 import {
   CONTENT_TYPE_ICONS,
   CONTENT_TYPE_LABELS,
   PLATFORM_CONTENT,
 } from "@entities/Channel/config/constants";
-import { ContentType, Platform } from "@entities/Channel/model/types";
 import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
+import type { ContentType, Platform } from "@entities/Channel/model/types";
+import { FieldPathContext } from "../model/store/content";
 import { AddPublicationModal } from "./AddPublicationModal";
 import { ChannelSelector } from "./ChannelSelector";
 import { Field } from "./Field";
@@ -32,7 +34,6 @@ import classes from "./index.module.css";
 import type {
   PublicationFormValues,
   Publication as PublicationType,
-  PublicationWithId,
 } from "../model/types";
 
 const SortableTab = ({
@@ -40,7 +41,7 @@ const SortableTab = ({
   onRemove,
   active,
 }: {
-  publication: PublicationWithId;
+  publication: PublicationType;
   onRemove: (id: string) => void;
   active: boolean;
 }) => {
@@ -111,7 +112,7 @@ const SortableTab = ({
           {selectedChannelsInfo.length > 0 && (
             <Group gap="xs" ml={24}>
               {selectedChannelsInfo.map((channel) => (
-                <ChannelAvatar channel={channel} key={channel.id} selected />
+                <ChannelAvatar channel={channel} key={channel.id} />
               ))}
             </Group>
           )}
@@ -122,10 +123,6 @@ const SortableTab = ({
 };
 
 export const Publication = () => {
-  const [activePublication, setActivePublication] = useState<string | null>(
-    null,
-  );
-  const [opened, { open, close }] = useDisclosure(false);
   const { control } = useFormContext<PublicationFormValues>();
 
   const {
@@ -137,7 +134,13 @@ export const Publication = () => {
   } = useFieldArray({
     control,
     name: "publications",
+    keyName: "_id",
   });
+
+  const [activePublication, setActivePublication] = useState<string | null>(
+    publications[0]?.id || null,
+  );
+  const [opened, { open, close }] = useDisclosure(false);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -150,12 +153,16 @@ export const Publication = () => {
   };
 
   const addPublication = (contentType: ContentType) => {
+    const id = uuidv4();
     const newPublication: PublicationType = {
+      id,
       type: contentType,
       channels: [],
+      title: "",
+      content: "",
     };
     append(newPublication);
-    setActivePublication(Date.now().toString());
+    setActivePublication(id);
   };
 
   const removePublication = (id: string) => {
@@ -172,7 +179,7 @@ export const Publication = () => {
     const index = publications.findIndex((pub) => pub.id === publicationId);
     if (index === -1) return;
 
-    const publication = publications[index] as unknown as PublicationWithId;
+    const publication = publications[index] as unknown as PublicationType;
     const hasChannel = publication.channels.includes(channelId);
 
     const newChannels = hasChannel
@@ -251,7 +258,7 @@ export const Publication = () => {
                       active={publication.id === activePublication}
                       key={publication.id}
                       onRemove={removePublication}
-                      publication={publication as unknown as PublicationWithId}
+                      publication={publication as unknown as PublicationType}
                     />
                   ))}
                 </Tabs.List>
@@ -260,15 +267,17 @@ export const Publication = () => {
           </Stack>
 
           <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
-            {publications.map((publication) => (
+            {publications.map((publication, index) => (
               <Tabs.Panel key={publication.id} value={publication.id}>
-                <ChannelSelector
-                  onChannelToggle={(channelId, _platform) => {
-                    handleChannelToggle(publication.id, channelId);
-                  }}
-                  publication={publication as unknown as PublicationWithId}
-                />
-                {PLATFORM_CONTENT[Platform.YouTube][publication.type]}
+                <FieldPathContext.Provider value={{ index }}>
+                  <ChannelSelector
+                    onChannelToggle={(channelId, _platform) => {
+                      handleChannelToggle(publication.id, channelId);
+                    }}
+                    publication={publication as unknown as PublicationType}
+                  />
+                  {PLATFORM_CONTENT[publication.type]}
+                </FieldPathContext.Provider>
               </Tabs.Panel>
             ))}
           </Stack>

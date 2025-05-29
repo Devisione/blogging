@@ -11,4 +11,11 @@ export interface GetEventByIdOutputDto {
   recurrenceStart?: string;
   recurrenceEnd?: string;
   parentId?: string;
+
+  publicationGroups: {
+    eventId: string;
+    id: string;
+    name: string;
+    status: string;
+  }[];
 }

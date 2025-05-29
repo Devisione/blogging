@@ -11,4 +11,9 @@ export interface Event {
   recurrenceEnd?: Date;
   parentId?: string;
   parent?: Event;
+  publicationGroups?: {
+    id: string;
+    name: string;
+    status: string;
+  }[];
 }

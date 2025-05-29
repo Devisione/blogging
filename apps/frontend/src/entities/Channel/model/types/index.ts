@@ -5,7 +5,7 @@ export interface ChannelDto {
   id: string;
   isActive: true;
   name: string;
-  type: string;
+  type: Platform;
   updatedAt: string;
   avatarUrl: string;
 }
@@ -23,10 +23,7 @@ export enum ContentType {
   VIDEO = "video",
 }
 
-export type ContentMap = Record<
-  Platform,
-  Partial<Record<ContentType, JSX.Element>>
->;
+export type ContentMap = Record<ContentType, JSX.Element>;
 
 export interface Channel extends Omit<ChannelDto, "channelId"> {
   platform: Platform;

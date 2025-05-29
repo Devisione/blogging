@@ -23,8 +23,9 @@ import {
 } from "@tabler/icons-react";
 import { useUnit } from "effector-react";
 import { ChannelApi } from "@entities/Channel/api";
+import { Platform } from "@entities/Channel/model/types";
 import { $userState } from "@entities/User/model/store";
-import type { Channel } from "@entities/User/model/types";
+import type { Channel } from "@entities/Channel/model/types";
 
 interface TelegramModalProps {
   opened: boolean;
@@ -73,7 +74,7 @@ const TelegramModal = ({ opened, onClose }: TelegramModalProps) => {
 };
 
 const ChannelCard = ({ channel }: { channel: Channel }) => {
-  // @ts-expect-error -- да пофиг
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- ок
   const PlatformIcon = PLATFORM_ICONS[channel.type] || null;
 
   const userState = useUnit($userState);
@@ -87,6 +88,7 @@ const ChannelCard = ({ channel }: { channel: Channel }) => {
     <Card p="md" radius="md" shadow="sm" withBorder>
       <Group>
         <Avatar radius="xl" size="lg" src={channel.avatarUrl}>
+          {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- ок */}
           {PlatformIcon ? <PlatformIcon size={24} /> : null}
         </Avatar>
         <div style={{ flex: 1 }}>
@@ -145,12 +147,12 @@ const ProfileScreen = () => {
                     leftSection={<IconBrandYoutube size={20} />}
                     rightSection={<IconExternalLink size={16} />}
                     variant={
-                      user.channels.some((ch) => ch.type === "YOUTUBE")
+                      user.channels.some((ch) => ch.type === Platform.YouTube)
                         ? "light"
                         : "filled"
                     }
                   >
-                    {user.channels.some((ch) => ch.type === "YOUTUBE")
+                    {user.channels.some((ch) => ch.type === Platform.YouTube)
                       ? "YouTube подключен"
                       : "Подключить YouTube"}
                   </Button>
@@ -160,12 +162,12 @@ const ProfileScreen = () => {
                     leftSection={<IconBrandVk size={20} />}
                     rightSection={<IconExternalLink size={16} />}
                     variant={
-                      user.channels.some((ch) => ch.type === "VK")
+                      user.channels.some((ch) => ch.type === Platform.VK)
                         ? "light"
                         : "filled"
                     }
                   >
-                    {user.channels.some((ch) => ch.type === "VK")
+                    {user.channels.some((ch) => ch.type === Platform.VK)
                       ? "VK подключен"
                       : "Подключить VK"}
                   </Button>
@@ -174,12 +176,12 @@ const ProfileScreen = () => {
                   leftSection={<IconBrandTelegram size={20} />}
                   onClick={openTelegram}
                   variant={
-                    user.channels.some((ch) => ch.type === "TELEGRAM")
+                    user.channels.some((ch) => ch.type === Platform.Telegram)
                       ? "light"
                       : "filled"
                   }
                 >
-                  {user.channels.some((ch) => ch.type === "TELEGRAM")
+                  {user.channels.some((ch) => ch.type === Platform.Telegram)
                     ? "Telegram подключен"
                     : "Подключить Telegram"}
                 </Button>

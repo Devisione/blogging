@@ -11,4 +11,11 @@ export type GetEventsByCurrentUserOutputDto = {
   recurrenceStart?: string;
   recurrenceEnd?: string;
   parentId?: string;
+
+  publicationGroups: {
+    eventId: string;
+    id: string;
+    name: string;
+    status: string;
+  }[];
 }[];

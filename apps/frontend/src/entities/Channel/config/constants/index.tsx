@@ -8,16 +8,10 @@ import {
 } from "@tabler/icons-react";
 // eslint-disable-next-line no-restricted-imports -- всё ок
 import { ContentType, Platform } from "@entities/Channel/model/types";
-import { TelegramPostForm } from "@screens/Publication/ui/PlatformForms/Telegram/Post";
-import { TelegramStoriesForm } from "@screens/Publication/ui/PlatformForms/Telegram/Stories";
-import { VKPostForm } from "@screens/Publication/ui/PlatformForms/VK/Post";
-import { VKShortForm } from "@screens/Publication/ui/PlatformForms/VK/Short";
-import { VKStoriesForm } from "@screens/Publication/ui/PlatformForms/VK/Stories";
-import { VKVideoForm } from "@screens/Publication/ui/PlatformForms/VK/Video";
-import { YoutubePostForm } from "@screens/Publication/ui/PlatformForms/YouTube/Post";
-import { YoutubeShortsForm } from "@screens/Publication/ui/PlatformForms/YouTube/Shorts";
-import { YoutubeStoriesForm } from "@screens/Publication/ui/PlatformForms/YouTube/Stories";
-import { YoutubeVideoForm } from "@screens/Publication/ui/PlatformForms/YouTube/Video";
+import { YoutubePostForm } from "@screens/Publication/ui/PlatformForms/Post";
+import { YoutubeShortsForm } from "@screens/Publication/ui/PlatformForms/Shorts";
+import { YoutubeStoriesForm } from "@screens/Publication/ui/PlatformForms/Stories";
+import { YoutubeVideoForm } from "@screens/Publication/ui/PlatformForms/Video";
 // eslint-disable-next-line no-restricted-imports -- всё ок
 import type { ContentMap } from "@entities/Channel/model/types";
 
@@ -59,22 +53,10 @@ export const PLATFORM_CAPABILITIES = {
 
 // Определяем компоненты для каждой платформы и типа контента
 export const PLATFORM_CONTENT: ContentMap = {
-  [Platform.VK]: {
-    [ContentType.POST]: <VKPostForm />,
-    [ContentType.SHORT]: <VKShortForm />,
-    [ContentType.STORIES]: <VKStoriesForm />,
-    [ContentType.VIDEO]: <VKVideoForm />,
-  },
-  [Platform.Telegram]: {
-    [ContentType.POST]: <TelegramPostForm />,
-    [ContentType.STORIES]: <TelegramStoriesForm />,
-  },
-  [Platform.YouTube]: {
-    [ContentType.POST]: <YoutubePostForm />,
-    [ContentType.SHORT]: <YoutubeShortsForm />,
-    [ContentType.STORIES]: <YoutubeStoriesForm />,
-    [ContentType.VIDEO]: <YoutubeVideoForm />,
-  },
+  [ContentType.POST]: <YoutubePostForm />,
+  [ContentType.SHORT]: <YoutubeShortsForm />,
+  [ContentType.STORIES]: <YoutubeStoriesForm />,
+  [ContentType.VIDEO]: <YoutubeVideoForm />,
 };
 
 // Remove MOCK_CHANNELS since we're using real data now

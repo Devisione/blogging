@@ -23,17 +23,11 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
 
   const router = useRouter();
 
+  console.log(event);
+
   return (
-    <Flex align="center" direction="column">
+    <Flex align="center" direction="column" style={{ position: "relative" }}>
       <div>
-        <Text component="span" size="xs">
-          {startTime} -{" "}
-          {getHumanReadableDifference(new Date(event.date), new Date(endDate))}
-        </Text>{" "}
-        {preparedEvent.title}
-      </div>
-      <hr style={{ width: "100%" }} />
-      <Flex align="center" justify="center" mb={4} w="100%">
         <ActionIcon
           aria-label="Settings"
           color="rgba(255, 255, 255, 1)"
@@ -42,10 +36,31 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
             void router.push(`/publication/${event.id}`);
           }}
           radius="xl"
+          style={{ position: "absolute", right: 0, top: 0 }}
           variant="subtle"
         >
           <IconPlus />
         </ActionIcon>
+        <Text component="span" size="xs">
+          {startTime} -{" "}
+          {getHumanReadableDifference(new Date(event.date), new Date(endDate))}
+        </Text>{" "}
+        {preparedEvent.title}
+      </div>
+      {event.publicationGroups ? <hr style={{ width: "100%" }} /> : null}
+      <Flex align="center" justify="start" mb={4} w="100%">
+        {event.publicationGroups?.map(({ name, id }) => (
+          <Text
+            fw="bold"
+            key={id}
+            onClick={(e) => {
+              e.stopPropagation();
+              void router.push(`/publication/${event.id}/${id}`);
+            }}
+          >
+            - {name}
+          </Text>
+        ))}
       </Flex>
     </Flex>
   );
