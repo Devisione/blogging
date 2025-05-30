@@ -25,8 +25,10 @@ import {
 import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
 import { $userState } from "@entities/User/model/store";
+import { Input } from "@shared/ui/forms/Input";
 import type { ContentType, Platform } from "@entities/Channel/model/types";
 import { FieldPathContext } from "../model/store/content";
+import { useSubmit } from "../model/store/useSubmit";
 import { AddPublicationModal } from "./AddPublicationModal";
 import { ChannelSelector } from "./ChannelSelector";
 import { Field } from "./Field";
@@ -194,17 +196,33 @@ export const Publication = () => {
 
   const { data: event } = useUnit($event);
 
+  const { submit, schedule, publish } = useSubmit();
+
   return (
     <>
       {createPortal(
         <>
-          <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
-            Создание публикации
-          </h1>
-          <Button style={{ marginLeft: "12px" }} variant="default">
+          <Input control={control} name="name" />
+          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок */}
+          <Button onClick={submit} style={{ marginLeft: "12px" }}>
+            Сохранить
+          </Button>
+          <Button
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
+            onClick={publish}
+            style={{ marginLeft: "12px" }}
+            variant="default"
+          >
             Опубликовать
           </Button>
-          <Button style={{ marginLeft: "12px" }}>Запланировать</Button>
+          <Button
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
+            onClick={schedule}
+            style={{ marginLeft: "12px" }}
+            variant="default"
+          >
+            Запланировать
+          </Button>
           <Field
             disabled={Boolean(event)}
             name="publishDate"

@@ -96,6 +96,7 @@ export const RichTextEditor = <T extends FieldValues>({
                         <ContentEditable
                           className={classes.input}
                           data-placeholder={placeholder}
+                          onChange={onChange}
                         />
                       }
                       placeholder={

@@ -8,12 +8,8 @@ import { Preview } from "./Preview";
 import type { PublicationFormValues } from "../../../model/types";
 
 export const YoutubeStoriesForm = () => {
-  const { control, getValues } = useFormContext<PublicationFormValues>();
+  const { control } = useFormContext<PublicationFormValues>();
   const { index } = useContext(FieldPathContext);
-
-  const formData = getValues(`publications.${index}`);
-
-  console.log(formData);
 
   return (
     <Grid w="1040px">

@@ -11,6 +11,7 @@ export interface Publication {
 }
 
 export interface PublicationFormValues {
+  name: string;
   publishDate: Date;
   publications: Publication[];
 }

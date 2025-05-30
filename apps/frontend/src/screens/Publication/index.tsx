@@ -34,6 +34,7 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
 
   const form = useForm<PublicationFormValues>({
     defaultValues: {
+      name: publicationsGroup?.name,
       publishDate: data?.date || new Date(),
       publications: publicationsGroup?.publications.map((publication) => ({
         id: publication.id,

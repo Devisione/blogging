@@ -23,8 +23,6 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
 
   const router = useRouter();
 
-  console.log(event);
-
   return (
     <Flex align="center" direction="column" style={{ position: "relative" }}>
       <div>
