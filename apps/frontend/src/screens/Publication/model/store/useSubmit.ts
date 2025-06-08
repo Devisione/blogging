@@ -6,16 +6,7 @@ import type { PublicationFormValues } from "../types";
 
 export const useSubmit = () => {
   const { getValues, trigger } = useFormContext<PublicationFormValues>();
-  const { query, push } = useRouter();
-
-  const create = useCallback(async (values: PublicationFormValues) => {
-    const result = await PublicationGroupApi.createPublicationGroup({
-      name: values.name,
-      publications: values.publications,
-    });
-
-    return result;
-  }, []);
+  const { query, reload } = useRouter();
 
   const update = useCallback(
     async (values: PublicationFormValues) => {
@@ -42,47 +33,29 @@ export const useSubmit = () => {
   const submit = useCallback(async () => {
     await trigger();
     const values = getValues();
-    if (query.publicationId) {
-      await update(values);
+    await update(values);
 
-      console.log("update", values);
-
-      await push("/");
-    } else {
-      await create(values);
-
-      console.log("create", values);
-    }
-    await push("/");
-  }, [create, getValues, push, query.publicationId, trigger, update]);
+    reload();
+    console.log("update", values);
+  }, [getValues, reload, trigger, update]);
 
   const schedule = useCallback(async () => {
     await trigger();
 
     const values = getValues();
 
-    let groupId = query.publicationId as string;
-
-    if (!query.publicationId) {
-      const group = await create(values);
-
-      groupId = group.id;
-    } else {
-      await update(values);
-    }
+    const groupId = query.publicationId as string;
+    await update(values);
+    reload();
 
     await PublicationGroupApi.publishGroup({ groupId });
-
-    await push("/");
-  }, [create, getValues, push, query.publicationId, trigger, update]);
+  }, [getValues, query.publicationId, reload, trigger, update]);
 
   const deSchedule = useCallback(async () => {
     await PublicationGroupApi.depublishGroup({
       groupId: query.publicationId as string,
     });
-
-    await push("/");
-  }, [push, query.publicationId]);
+  }, [query.publicationId]);
 
   return { submit, schedule, deSchedule };
 };

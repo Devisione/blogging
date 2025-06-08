@@ -4,6 +4,8 @@ export interface UpdatePublicationGroupByIdOutputDto {
   id: string;
   name: string;
   status: string;
+  updatedAt: string;
+  createdAt: string;
 
   publications: {
     id: string;

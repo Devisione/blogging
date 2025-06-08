@@ -5,6 +5,9 @@ export interface PublicationGroup {
   eventId: string;
   name: string;
   status: string;
+  updatedAt: Date;
+  createdAt: Date;
+
   publications: {
     id: string;
     content: string;

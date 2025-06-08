@@ -8,6 +8,9 @@ export const transformGetPublicationGroupByIdResponseToModel = (
     id: params.id,
     name: params.name,
     status: params.status,
+    updatedAt: new Date(params.updatedAt),
+    createdAt: new Date(params.createdAt),
+
     publications: params.publications.map((publication) => ({
       id: publication.id,
       groupId: publication.groupId,

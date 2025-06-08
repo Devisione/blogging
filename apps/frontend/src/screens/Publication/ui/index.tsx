@@ -15,6 +15,7 @@ import { ActionIcon, Button, Group, Stack, Tabs, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconX } from "@tabler/icons-react";
+import { format } from "date-fns";
 import { useUnit } from "effector-react";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -240,6 +241,11 @@ export const Publication = () => {
               />
             )}
           />
+          {publicationsGroup?.updatedAt ? (
+            <Text ml={12}>
+              {`Обновлено: ${format(publicationsGroup.updatedAt, "dd/MM/yyyy HH:mm")}`}
+            </Text>
+          ) : null}
         </>,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- всё там есть
         document.querySelector("#header-portal")!,
