@@ -6,6 +6,7 @@ export const transformCreatePublicationGroupResponseToModel = (
 ): PublicationGroup => {
   return {
     id: params.id,
+    eventId: params.eventId,
     name: params.name,
     status: params.status,
     publications: params.publications?.map((publication) => ({

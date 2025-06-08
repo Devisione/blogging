@@ -132,12 +132,12 @@ const EventModal = ({
       if (
         eventData.recurrenceType === "weekly" &&
         !eventData.recurrenceDays?.some(
-          (day) => day === DAYS[getDayOfWeek(eventData.date) - 1].value,
+          (day) => day === DAYS[getDayOfWeek(eventData.date)].value,
         )
       ) {
         setEventData({
           ...eventData,
-          recurrenceDays: [DAYS[getDayOfWeek(eventData.date) - 1].value],
+          recurrenceDays: [DAYS[getDayOfWeek(eventData.date)].value],
         });
       }
     }
@@ -227,8 +227,7 @@ const EventModal = ({
                     disabled={
                       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- что то тут лагает
                       isOneDay
-                        ? DAYS[getDayOfWeek(eventData.date) - 1].value ===
-                          day.value
+                        ? DAYS[getDayOfWeek(eventData.date)].value === day.value
                         : false
                     }
                     key={day.value}

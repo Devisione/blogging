@@ -2,6 +2,7 @@ import type { ContentType } from "../../../Channel/model/types";
 
 export interface PublicationGroup {
   id: string;
+  eventId: string;
   name: string;
   status: string;
   publications: {

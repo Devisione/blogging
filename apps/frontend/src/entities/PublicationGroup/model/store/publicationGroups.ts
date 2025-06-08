@@ -1,5 +1,5 @@
 import { createMutation, createQuery } from "@farfetched/core";
-import { $router, onChangePageEv } from "@services/Router/model";
+import { $router, onChangePageEv, pushFx } from "@services/Router/model";
 import { sample } from "effector";
 import { $events } from "../../../Event/model/store";
 import { PublicationGroupApi } from "../../api";
@@ -33,4 +33,16 @@ sample({
   clock: deletePublicationGroupMutation.$succeeded,
   filter: (_router, success) => success,
   target: $events.start,
+});
+
+export const createPublicationGroupMutation = createQuery({
+  handler: PublicationGroupApi.createPublicationGroup,
+});
+
+sample({
+  source: $router,
+  clock: createPublicationGroupMutation.$data,
+  filter: (_source, data) => Boolean(data?.id),
+  fn: (_router, data) => `/publication/${data?.eventId}/${data?.id}`,
+  target: pushFx,
 });

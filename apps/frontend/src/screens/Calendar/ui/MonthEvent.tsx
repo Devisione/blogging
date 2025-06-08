@@ -8,6 +8,7 @@ import { deletePublicationGroupMutation } from "@entities/PublicationGroup/model
 import { getHumanReadableDifference } from "@shared/utils/date";
 import { mergeWithParent } from "@shared/utils/object";
 import type { Event } from "@entities/Event/model/types";
+import { useCreatePublication } from "../model/hooks/useCreatePublication";
 
 export type EventWithDates = Event & {
   start: string;
@@ -26,6 +27,8 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
 
   const router = useRouter();
 
+  const createPublication = useCreatePublication();
+
   return (
     <Flex align="center" direction="column" style={{ position: "relative" }}>
       <div>
@@ -34,7 +37,10 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
           color="rgba(255, 255, 255, 1)"
           onClick={(e) => {
             e.stopPropagation();
-            void router.push(`/publication/${event.id}`);
+            createPublication({
+              name: event.title || event.parent?.title || "",
+              eventId: event.id,
+            });
           }}
           radius="xl"
           style={{ position: "absolute", right: 0, top: 0 }}
@@ -66,7 +72,6 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
               color="rgba(255, 255, 255, 1)"
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("delete");
                 deletePublicationGroup.start({ groupId: id });
               }}
               radius="xl"

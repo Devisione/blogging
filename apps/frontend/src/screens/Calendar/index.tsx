@@ -3,7 +3,6 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import type { SlotInfo } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/router";
 import { Button } from "@mantine/core";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { ru } from "date-fns/locale/ru"; // Локализация для календаря
@@ -18,6 +17,7 @@ import {
 import type { Event } from "@entities/Event/model/types";
 import EventModal from "./ui/EventModal";
 import MonthEvent from "./ui/MonthEvent";
+import PublicationCreateModal from "./ui/PublicationCreateModal";
 
 // Локализация для date-fns
 const locales = {
@@ -82,6 +82,8 @@ const CalendarPage = () => {
   );
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalCreatePublication, setModalCreatePublication] =
+    useState<SlotInfo | null>(null);
   const [eventData, setEventData] = useState(getDefaultEvent());
 
   const openModal = (
@@ -117,18 +119,7 @@ const CalendarPage = () => {
   };
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
-    const start = new Date(slotInfo.start);
-    const end = new Date(slotInfo.end);
-    const duration = Math.floor(
-      (end.getTime() - start.getTime()) / (1000 * 60),
-    );
-
-    setEventData({
-      ...getDefaultEvent(),
-      date: start,
-      duration,
-    });
-    setModalOpen(true);
+    setModalCreatePublication(slotInfo);
   };
 
   const handleSelectEvent = (targetEvent: Event) => {
@@ -139,8 +130,6 @@ const CalendarPage = () => {
     openModal(findedEvent?.date, findedEvent);
   };
 
-  const router = useRouter();
-
   return (
     <div style={{ height: "calc(100dvh - 92px)" }}>
       {createPortal(
@@ -148,14 +137,6 @@ const CalendarPage = () => {
           <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
             Календарь событий
           </h1>
-          <Button
-            onClick={() => {
-              void router.push("/publication");
-            }}
-            style={{ marginLeft: "12px" }}
-          >
-            Добавить публикацию
-          </Button>
           <Button
             onClick={() => {
               openModal(new Date());
@@ -200,6 +181,13 @@ const CalendarPage = () => {
         setEventData={setEventData}
         setModalOpen={setModalOpen}
       />
+
+      {modalCreatePublication ? (
+        <PublicationCreateModal
+          setModalOpen={setModalCreatePublication}
+          slotInfo={modalCreatePublication}
+        />
+      ) : null}
     </div>
   );
 };
