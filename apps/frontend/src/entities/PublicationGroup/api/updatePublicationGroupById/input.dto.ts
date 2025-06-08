@@ -5,7 +5,6 @@ export interface UpdatePublicationGroupByIdInputDto {
 
   name: string;
   publications: {
-    id: string;
     type: ContentType;
     channels: string[];
     content: string;

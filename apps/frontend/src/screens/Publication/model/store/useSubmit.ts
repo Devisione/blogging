@@ -22,7 +22,16 @@ export const useSubmit = () => {
       const result = await PublicationGroupApi.updatePublicationGroupById({
         groupId: query.publicationId as string,
         name: values.name,
-        publications: values.publications,
+        publications: values.publications.map(
+          ({ title, type, content, preview, video, channels }) => ({
+            title,
+            type,
+            content,
+            preview,
+            video,
+            channels,
+          }),
+        ),
       });
 
       return result;

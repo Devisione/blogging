@@ -11,7 +11,7 @@ export const useCreatePublication = () => {
     (values: { name: string; date?: Date; eventId?: string }) => {
       void (async () => {
         let eventId = values.eventId;
-        if (!eventId) {
+        if (!eventId && values.date) {
           const result = await createEvent({
             title: values.name,
             date: values.date,
