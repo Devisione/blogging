@@ -205,7 +205,7 @@ export const Publication = () => {
     <>
       {createPortal(
         <>
-          <Input control={control} name="name" />
+          <Input control={control} name="name" placeholder="Наименование" />
           {publicationsGroup?.status !== "published" && (
             <Button
               // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
@@ -215,17 +215,19 @@ export const Publication = () => {
               Сохранить
             </Button>
           )}
-          <Button
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
-            onClick={
-              publicationsGroup?.status === "draft" ? schedule : deSchedule
-            }
-            style={{ marginLeft: "12px" }}
-            variant="default"
-          >
-            {publicationsGroup?.status === "draft" && "Запланировать"}
-            {publicationsGroup?.status === "scheduled" && "Отменить"}
-          </Button>
+          {publicationsGroup?.status ? (
+            <Button
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
+              onClick={
+                publicationsGroup.status === "draft" ? schedule : deSchedule
+              }
+              style={{ marginLeft: "12px" }}
+              variant="default"
+            >
+              {publicationsGroup.status === "draft" && "Запланировать"}
+              {publicationsGroup.status === "scheduled" && "Отменить"}
+            </Button>
+          ) : null}
           <Field
             disabled={Boolean(event)}
             name="publishDate"
