@@ -1,11 +1,12 @@
 import axios from "axios";
 import { transformCreatePublicationGroupResponseToModel } from "./transform";
+import type { PublicationGroup } from "../../model/types";
 import type { CreatePublicationGroupInputDto } from "./input.dto";
 import type { CreatePublicationGroupOutputDto } from "./output.dto";
 
 const createPublicationGroup = async (
   inputDto: CreatePublicationGroupInputDto,
-): Promise<any> => {
+): Promise<PublicationGroup> => {
   const { data } = await axios.post<CreatePublicationGroupOutputDto>(
     `http://localhost:4000/publication-group`,
     inputDto,

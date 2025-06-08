@@ -49,7 +49,7 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
         {preparedEvent.title}
       </div>
       {event.publicationGroups ? <hr style={{ width: "100%" }} /> : null}
-      <Flex align="start" justify="start" mb={4} w="100%" direction="column">
+      <Flex align="start" direction="column" justify="start" mb={4} w="100%">
         {event.publicationGroups?.map(({ name, id }) => (
           <Flex align="center" justify="space-between" key={id} w="100%">
             <Text

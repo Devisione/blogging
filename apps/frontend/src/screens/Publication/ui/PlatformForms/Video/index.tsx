@@ -1,31 +1,22 @@
-import { useForm } from "react-hook-form";
+import { useContext } from "react";
+import { useFormContext } from "react-hook-form";
 import { AspectRatio, Grid, Stack, Text } from "@mantine/core";
 import { AssetUpload } from "@shared/ui/forms/AssetUpload";
 import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
+import { FieldPathContext } from "../../../model/store/content";
 import { Preview } from "../../Preview";
-
-interface YoutubeVideoFormData {
-  publishDate: Date;
-  video: File | string;
-  title: string;
-  description: string;
-}
+import type { PublicationFormValues } from "../../../model/types";
 
 export const YoutubeVideoForm = () => {
-  const { control, watch } = useForm<YoutubeVideoFormData>({
-    defaultValues: {
-      publishDate: new Date(),
-      video: "",
-      title: "",
-      description: "",
-    },
-  });
+  const { control, watch } = useFormContext<PublicationFormValues>();
 
   const formData = watch();
+  const { index } = useContext(FieldPathContext);
+
   const videoUrl =
-    formData.video instanceof File
-      ? URL.createObjectURL(formData.video)
-      : formData.video;
+    formData.publications[index].video instanceof File
+      ? URL.createObjectURL(formData.publications[index].video)
+      : formData.publications[index].video;
 
   return (
     <Grid w="1040px">
@@ -34,18 +25,12 @@ export const YoutubeVideoForm = () => {
           accept="video/*"
           control={control}
           label="Видео"
-          name="video"
-        />
-        <RichTextEditor
-          control={control}
-          label="Заголовок"
-          name="title"
-          toolbar={false}
+          name={`publications.${index}.video`}
         />
         <RichTextEditor
           control={control}
           label="Описание"
-          name="description"
+          name={`publications.${index}.content`}
           toolbar
         />
       </Grid.Col>
@@ -70,10 +55,10 @@ export const YoutubeVideoForm = () => {
               />
             </AspectRatio>
             <Text fw={500} size="lg" style={{ wordWrap: "break-word" }}>
-              {formData.title}
+              {formData.name}
             </Text>
             <Text size="sm" style={{ wordWrap: "break-word" }}>
-              {formData.description}
+              {formData.publications[index].content}
             </Text>
           </Stack>
         </Preview>

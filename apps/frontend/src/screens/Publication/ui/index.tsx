@@ -24,6 +24,7 @@ import {
 } from "@entities/Channel/config/constants";
 import { ChannelAvatar } from "@entities/Channel/ui/ChannelAvatar";
 import { $event } from "@entities/Event/model/store/event";
+import { $publicationGroup } from "@entities/PublicationGroup/model/store/publicationGroups";
 import { $userState } from "@entities/User/model/store";
 import { Input } from "@shared/ui/forms/Input";
 import type { ContentType, Platform } from "@entities/Channel/model/types";
@@ -125,6 +126,8 @@ const SortableTab = ({
 };
 
 export const Publication = () => {
+  const { data: publicationsGroup } = useUnit($publicationGroup);
+
   const { control } = useFormContext<PublicationFormValues>();
 
   const {
@@ -196,32 +199,32 @@ export const Publication = () => {
 
   const { data: event } = useUnit($event);
 
-  const { submit, schedule, publish } = useSubmit();
+  const { submit, schedule, deSchedule } = useSubmit();
 
   return (
     <>
       {createPortal(
         <>
           <Input control={control} name="name" />
-          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок */}
-          <Button onClick={submit} style={{ marginLeft: "12px" }}>
-            Сохранить
-          </Button>
+          {publicationsGroup?.status !== "published" && (
+            <Button
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
+              onClick={submit}
+              style={{ marginLeft: "12px" }}
+            >
+              Сохранить
+            </Button>
+          )}
           <Button
             // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
-            onClick={publish}
+            onClick={
+              publicationsGroup?.status === "draft" ? schedule : deSchedule
+            }
             style={{ marginLeft: "12px" }}
             variant="default"
           >
-            Опубликовать
-          </Button>
-          <Button
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
-            onClick={schedule}
-            style={{ marginLeft: "12px" }}
-            variant="default"
-          >
-            Запланировать
+            {publicationsGroup?.status === "draft" && "Запланировать"}
+            {publicationsGroup?.status === "scheduled" && "Отменить"}
           </Button>
           <Field
             disabled={Boolean(event)}

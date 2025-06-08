@@ -1,50 +1,79 @@
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 import { useRouter } from "next/router";
-import createPublicationGroup from "@entities/PublicationGroup/api/createPublicationGroup";
-import updatePublicationGroupById from "@entities/PublicationGroup/api/updatePublicationGroupById";
+import { PublicationGroupApi } from "@entities/PublicationGroup/api";
 import type { PublicationFormValues } from "../types";
 
 export const useSubmit = () => {
   const { getValues, trigger } = useFormContext<PublicationFormValues>();
   const { query, push } = useRouter();
 
-  const submit = useCallback(async () => {
-    await trigger();
-    const values = getValues();
-    if (query.publicationId) {
-      await updatePublicationGroupById({
+  const create = useCallback(async (values: PublicationFormValues) => {
+    const result = await PublicationGroupApi.createPublicationGroup({
+      name: values.name,
+      publications: values.publications,
+    });
+
+    return result;
+  }, []);
+
+  const update = useCallback(
+    async (values: PublicationFormValues) => {
+      const result = await PublicationGroupApi.updatePublicationGroupById({
         groupId: query.publicationId as string,
         name: values.name,
         publications: values.publications,
       });
 
+      return result;
+    },
+    [query.publicationId],
+  );
+
+  const submit = useCallback(async () => {
+    await trigger();
+    const values = getValues();
+    if (query.publicationId) {
+      await update(values);
+
       console.log("update", values);
 
       await push("/");
     } else {
-      await createPublicationGroup({
-        name: values.name,
-        publications: values.publications,
-      });
+      await create(values);
 
       console.log("create", values);
-
-      await push("/");
     }
-  }, [getValues, push, query.publicationId, trigger]);
+    await push("/");
+  }, [create, getValues, push, query.publicationId, trigger, update]);
 
   const schedule = useCallback(async () => {
     await trigger();
 
-    console.log(getValues());
-  }, [getValues, trigger]);
+    const values = getValues();
 
-  const publish = useCallback(async () => {
-    await trigger();
+    let groupId = query.publicationId as string;
 
-    console.log(getValues());
-  }, [getValues, trigger]);
+    if (!query.publicationId) {
+      const group = await create(values);
 
-  return { submit, schedule, publish };
+      groupId = group.id;
+    } else {
+      await update(values);
+    }
+
+    await PublicationGroupApi.publishGroup({ groupId });
+
+    await push("/");
+  }, [create, getValues, push, query.publicationId, trigger, update]);
+
+  const deSchedule = useCallback(async () => {
+    await PublicationGroupApi.depublishGroup({
+      groupId: query.publicationId as string,
+    });
+
+    await push("/");
+  }, [push, query.publicationId]);
+
+  return { submit, schedule, deSchedule };
 };
