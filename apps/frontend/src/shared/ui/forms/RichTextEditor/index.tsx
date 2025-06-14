@@ -54,6 +54,7 @@ export const RichTextEditor = <T extends FieldValues>({
     },
     [],
   );
+
   return (
     <Controller
       control={control}

@@ -1,7 +1,6 @@
 import { Box, FileInput, Group, Text } from "@mantine/core";
 
 interface AssetUploadProps {
-  id: string;
   label: string;
   accept?: string;
   multiple?: boolean;

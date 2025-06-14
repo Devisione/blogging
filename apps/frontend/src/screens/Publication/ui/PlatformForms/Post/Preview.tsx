@@ -1,16 +1,19 @@
 import { useContext } from "react";
-import { useFormContext } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import { Image, Stack, Text } from "@mantine/core";
 import { BasePreview } from "@shared/ui/preview/BasePreview";
 import { FieldPathContext } from "../../../model/store/content";
 import type { PublicationFormValues } from "../../../model/types";
 
 export const Preview = () => {
-  const { getValues } = useFormContext<PublicationFormValues>();
   const { index } = useContext(FieldPathContext);
 
-  const publishDate = getValues(`publishDate`);
-  const formData = getValues(`publications.${index}`);
+  const values = useWatch<PublicationFormValues>();
+
+  // eslint-disable-next-line -- всё ок
+  const publishDate = values.publishDate!;
+  // eslint-disable-next-line -- всё ок
+  const formData = values.publications?.[index]!;
 
   const imageUrl =
     // eslint-disable-next-line no-nested-ternary -- пох

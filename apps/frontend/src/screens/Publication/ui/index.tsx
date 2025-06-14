@@ -129,7 +129,7 @@ const SortableTab = ({
 export const Publication = () => {
   const { data: publicationsGroup } = useUnit($publicationGroup);
 
-  const { control } = useFormContext<PublicationFormValues>();
+  const { control, getValues } = useFormContext<PublicationFormValues>();
 
   const {
     fields: publications,
@@ -185,7 +185,8 @@ export const Publication = () => {
     const index = publications.findIndex((pub) => pub.id === publicationId);
     if (index === -1) return;
 
-    const publication = publications[index] as unknown as PublicationType;
+    const publicationValues = getValues().publications;
+    const publication = publicationValues[index] as unknown as PublicationType;
     const hasChannel = publication.channels.includes(channelId);
 
     const newChannels = hasChannel
@@ -298,7 +299,7 @@ export const Publication = () => {
           <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
             {publications.map((publication, index) => (
               <Tabs.Panel key={publication.id} value={publication.id}>
-                <FieldPathContext.Provider value={{ index }}>
+                <FieldPathContext.Provider value={{ index, update, has: true }}>
                   <ChannelSelector
                     onChannelToggle={(channelId, _platform) => {
                       handleChannelToggle(publication.id, channelId);

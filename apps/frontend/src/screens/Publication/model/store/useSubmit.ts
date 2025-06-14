@@ -35,7 +35,7 @@ export const useSubmit = () => {
     await update(values);
 
     reload();
-    console.log("update", values);
+    console.log("update", JSON.stringify(values));
   }, [getValues, reload, trigger, update]);
 
   const schedule = useCallback(async () => {
