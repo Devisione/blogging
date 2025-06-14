@@ -80,7 +80,7 @@ export const RichTextEditor = <T extends FieldValues>({
         };
 
         return (
-          <Box mb={mb}>
+          <Box mb={mb} flex={1}>
             <Text mb="xs" size="sm">
               {label}
             </Text>
