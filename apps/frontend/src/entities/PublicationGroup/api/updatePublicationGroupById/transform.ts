@@ -17,8 +17,12 @@ export const transformUpdatePublicationGroupByIdResponseToModel = (
       title: publication.title,
       content: publication.content,
       type: publication.platform,
-      video_url: publication.video_url,
-      preview_url: publication.preview_url,
+      video_url: publication.attachments.find(({ mimetype }) =>
+        mimetype.includes("video"),
+      )?.url,
+      preview_url: publication.attachments.find(({ mimetype }) =>
+        mimetype.includes("image"),
+      )?.url,
       options: publication.options,
       channels: publication.publicationChannels.map(
         ({ channel }) => channel.id,

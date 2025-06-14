@@ -42,6 +42,8 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
         title: publication.title,
         content: publication.content,
         channels: publication.channels,
+        video_url: publication.video_url,
+        preview_url: publication.preview_url,
       })),
     },
   });

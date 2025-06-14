@@ -14,12 +14,11 @@ export const useSubmit = () => {
         groupId: query.publicationId as string,
         name: values.name,
         publications: values.publications.map(
-          ({ title, type, content, preview, video, channels }) => ({
+          ({ id, title, type, content, channels }) => ({
+            id,
             title,
             type,
             content,
-            preview,
-            video,
             channels,
           }),
         ),

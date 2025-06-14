@@ -13,9 +13,14 @@ export interface GetPublicationGroupByIdOutputDto {
     groupId: string;
     options: object;
     platform: ContentType;
-    preview_url?: string;
     title?: string;
-    video_url?: string;
     publicationChannels: { channel: Channel; id: string; status: string }[];
+    attachments: {
+      filename: string;
+      id: string;
+      mimetype: string;
+      size: number;
+      url: string;
+    }[];
   }[];
 }

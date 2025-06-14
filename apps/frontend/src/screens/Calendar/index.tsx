@@ -18,6 +18,7 @@ import type { Event } from "@entities/Event/model/types";
 import EventModal from "./ui/EventModal";
 import MonthEvent from "./ui/MonthEvent";
 import PublicationCreateModal from "./ui/PublicationCreateModal";
+import PublicationDetail from "./ui/PublicationDetail";
 
 // Локализация для date-fns
 const locales = {
@@ -84,6 +85,8 @@ const CalendarPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalCreatePublication, setModalCreatePublication] =
     useState<SlotInfo | null>(null);
+  const [modalDetailPublication, setModalDetailPublication] =
+    useState<Event | null>(null);
   const [eventData, setEventData] = useState(getDefaultEvent());
 
   const openModal = (
@@ -127,7 +130,7 @@ const CalendarPage = () => {
       ? events?.find(({ id }) => id === targetEvent.parentId)
       : targetEvent;
 
-    openModal(findedEvent?.date, findedEvent);
+    setModalDetailPublication(findedEvent || null);
   };
 
   return (
@@ -186,6 +189,12 @@ const CalendarPage = () => {
         <PublicationCreateModal
           setModalOpen={setModalCreatePublication}
           slotInfo={modalCreatePublication}
+        />
+      ) : null}
+      {modalDetailPublication ? (
+        <PublicationDetail
+          event={modalDetailPublication}
+          setModalOpen={setModalDetailPublication}
         />
       ) : null}
     </div>

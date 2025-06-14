@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { Grid } from "@mantine/core";
-import { AssetUpload } from "@shared/ui/forms/AssetUpload";
 import { RichTextEditor } from "@shared/ui/forms/RichTextEditor";
 import { FieldPathContext } from "../../../model/store/content";
+import { AssetUpload } from "../../AssetUpload";
 import { Preview } from "./Preview";
 import type { PublicationFormValues } from "../../../model/types";
 
@@ -14,12 +14,7 @@ export const YoutubePostForm = () => {
   return (
     <Grid w="1040px">
       <Grid.Col span={6}>
-        <AssetUpload
-          accept="image/*"
-          control={control}
-          label="Обложка"
-          name={`publications.${index}.preview`}
-        />
+        <AssetUpload accept="image/*" label="Обложка" />
         <RichTextEditor
           control={control}
           label="Название"

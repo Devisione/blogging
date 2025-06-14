@@ -43,7 +43,12 @@ export const RichTextEditor = <T extends FieldValues>({
     (onChange: (value: string) => void, editorState: EditorState) => {
       editorState.read(() => {
         const root = $getRoot();
-        const textContent = root.getTextContent();
+        const paragraphs = root.getChildren();
+
+        const textContent = paragraphs
+          .map((node) => node.getTextContent())
+          .join("\n");
+
         onChange(textContent);
       });
     },
