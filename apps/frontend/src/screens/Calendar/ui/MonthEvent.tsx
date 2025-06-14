@@ -4,6 +4,7 @@ import { ActionIcon, Flex, Text } from "@mantine/core";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useUnit } from "effector-react";
+import { onDeleteEvent } from "@entities/Event/model/store";
 import { deletePublicationGroupMutation } from "@entities/PublicationGroup/model/store/publicationGroups";
 import { getHumanReadableDifference } from "@shared/utils/date";
 import { mergeWithParent } from "@shared/utils/object";
@@ -29,9 +30,24 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
 
   const createPublication = useCreatePublication();
 
+  const onDelete = useUnit(onDeleteEvent);
+
   return (
     <Flex align="center" direction="column" style={{ position: "relative" }}>
       <div>
+        <ActionIcon
+          aria-label="Settings"
+          color="rgba(255, 255, 255, 1)"
+          onClick={(e) => {
+            e.stopPropagation();
+            void onDelete({ id: event.id });
+          }}
+          radius="xl"
+          style={{ position: "absolute", left: -4, top: 0 }}
+          variant="subtle"
+        >
+          <IconTrash />
+        </ActionIcon>
         <ActionIcon
           aria-label="Settings"
           color="rgba(255, 255, 255, 1)"
