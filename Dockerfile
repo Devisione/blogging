@@ -2,7 +2,7 @@ FROM node:18-alpine
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY . .
+COPY ./apps/frontend .
 RUN yarn install
 RUN yarn build
 

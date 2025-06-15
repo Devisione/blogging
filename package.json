@@ -1,9 +1,0 @@
-{
-  "name": "blogging-fe",
-  "scripts": {
-    "start": "cd apps/frontend && npm run start",
-    "build": "cd apps/frontend && npm run build"
-  },
-  "private": true,
-  "workspaces": ["apps/frontend"]
-}
