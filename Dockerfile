@@ -1,0 +1,29 @@
+FROM node:18-alpine
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY . .
+RUN yarn install
+RUN yarn build
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+USER nextjs
+
+EXPOSE 3000
+
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
+ARG NEXT_PUBLIC_API_URL
+ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+ENV NEXTAUTH_URL=$NEXTAUTH_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+ENV PORT 3000
+
+CMD ["yarn", "start"]
+
