@@ -3,7 +3,7 @@ import type { DeleteEventInputDto } from "./input.dto";
 
 const deleteEvent = async (inputDto: DeleteEventInputDto): Promise<boolean> => {
   const response = await axios.delete(
-    `http://localhost:4000/events/${inputDto.id}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events/${inputDto.id}`,
     {
       withCredentials: true,
     },

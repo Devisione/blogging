@@ -5,7 +5,7 @@ import type { RemoveOutputDto } from "./output.dto";
 
 const removeChannel = async (inputDto: RemoveInputDto): Promise<any> => {
   const response = await axios.delete<RemoveOutputDto>(
-    `http://localhost:4000/channels/${inputDto.id}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/channels/${inputDto.id}`,
     {
       withCredentials: true,
     },

@@ -8,7 +8,7 @@ const createPublicationGroup = async (
   inputDto: CreatePublicationGroupInputDto,
 ): Promise<PublicationGroup> => {
   const { data } = await axios.post<CreatePublicationGroupOutputDto>(
-    `http://localhost:4000/publication-group`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/publication-group`,
     inputDto,
     {
       withCredentials: true,

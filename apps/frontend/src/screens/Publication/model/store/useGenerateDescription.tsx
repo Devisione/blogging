@@ -10,7 +10,7 @@ export const useGenerateDescription = (fieldName: string) => {
 
   return useCallback(async () => {
     const { data } = await axios.post<{ description: string }>(
-      "http://localhost:4000/generate/description",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/generate/description`,
       {
         topic: event?.description,
       },

@@ -5,7 +5,7 @@ const publishGroup = async (
   inputDto: PublishGroupInputDto,
 ): Promise<boolean> => {
   const { status } = await axios.post(
-    `http://localhost:4000/publication-group/${inputDto.groupId}/publish`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/publication-group/${inputDto.groupId}/publish`,
     void 0,
     {
       withCredentials: true,

@@ -5,7 +5,7 @@ import type { GetEventsByCurrentUserOutputDto } from "./output.dto";
 
 const getEventsByCurrentUser = async (): Promise<Event[]> => {
   const response = await axios.get<GetEventsByCurrentUserOutputDto>(
-    "http://localhost:4000/events/user",
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events/user`,
     {
       withCredentials: true,
     },

@@ -8,7 +8,7 @@ const uploadAttachment = async (
   formData.append("file", inputDto.file);
 
   const { status } = await axios.post(
-    `http://localhost:4000/attachment/upload/${inputDto.publicationId}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/attachment/upload/${inputDto.publicationId}`,
     formData,
     {
       withCredentials: true,

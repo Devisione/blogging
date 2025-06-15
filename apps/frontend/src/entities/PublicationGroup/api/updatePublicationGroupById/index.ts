@@ -9,7 +9,7 @@ const updatePublicationGroupById = async (
 ): Promise<PublicationGroup> => {
   const { groupId, ...other } = inputDto;
   const { data } = await axios.put<UpdatePublicationGroupByIdOutputDto>(
-    `http://localhost:4000/publication-group/${groupId}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/publication-group/${groupId}`,
     other,
     {
       withCredentials: true,

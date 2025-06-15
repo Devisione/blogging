@@ -8,7 +8,7 @@ const getPublicationGroupById = async (
   inputDto: GetPublicationGroupByIdInputDto,
 ): Promise<PublicationGroup> => {
   const { data } = await axios.get<GetPublicationGroupByIdOutputDto>(
-    `http://localhost:4000/publication-group/${inputDto.groupId}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/publication-group/${inputDto.groupId}`,
     {
       withCredentials: true,
     },

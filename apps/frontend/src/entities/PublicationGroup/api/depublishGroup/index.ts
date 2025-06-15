@@ -5,7 +5,7 @@ const depublishGroup = async (
   inputDto: DepublishGroupInputDto,
 ): Promise<boolean> => {
   const { status } = await axios.post(
-    `http://localhost:4000/publication-group/${inputDto.groupId}/depublish`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/publication-group/${inputDto.groupId}/depublish`,
     void 0,
     {
       withCredentials: true,

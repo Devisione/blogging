@@ -7,7 +7,7 @@ const createEvent = async (
   inputDto: CreateEventInputDto,
 ): Promise<CreateEventOutputDto> => {
   const response = await axios.post<CreateEventOutputDto>(
-    "http://localhost:4000/events",
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events`,
     inputDto,
     {
       withCredentials: true,

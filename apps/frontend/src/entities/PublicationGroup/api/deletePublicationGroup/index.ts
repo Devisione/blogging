@@ -5,7 +5,7 @@ const deletePublicationGroup = async (
   inputDto: DeletePublicationGroupInputDto,
 ): Promise<boolean> => {
   const { status } = await axios.delete(
-    `http://localhost:4000/publication-group/${inputDto.groupId}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/publication-group/${inputDto.groupId}`,
     {
       withCredentials: true,
     },

@@ -6,7 +6,7 @@ import type { GetEventByIdOutputDto } from "./output.dto";
 
 const getEventById = async (inputDto: GetEventByIdInputDto): Promise<Event> => {
   const response = await axios.get<GetEventByIdOutputDto>(
-    `http://localhost:4000/events/${inputDto.id}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events/${inputDto.id}`,
     {
       withCredentials: true,
     },

@@ -20,7 +20,7 @@ export const Preview = () => {
     formData.preview instanceof File
       ? URL.createObjectURL(formData.preview)
       : formData.preview_url
-        ? `http://localhost:4000${formData.preview_url}`
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${formData.preview_url}`
         : void 0;
 
   return (

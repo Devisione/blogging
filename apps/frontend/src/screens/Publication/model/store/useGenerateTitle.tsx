@@ -10,7 +10,7 @@ export const useGenerateTitle = (fieldName: string) => {
 
   return useCallback(async () => {
     const { data } = await axios.post<{ title: string }>(
-      "http://localhost:4000/generate/title",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/generate/title`,
       {
         topic: event?.description,
       },

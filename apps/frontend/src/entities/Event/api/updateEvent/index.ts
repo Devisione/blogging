@@ -7,7 +7,7 @@ const updateEvent = async (
   inputDto: UpdateEventInputDto,
 ): Promise<UpdateEventOutputDto> => {
   const response = await axios.put<UpdateEventOutputDto>(
-    `http://localhost:4000/events/${inputDto.id}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events/${inputDto.id}`,
     inputDto,
     {
       withCredentials: true,
