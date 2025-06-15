@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Controller } from "react-hook-form";
 import type { Control, FieldValues, Path } from "react-hook-form";
 import type { EditorState } from "lexical";
@@ -9,7 +9,8 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { Box, Text } from "@mantine/core";
-import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
+import { $getRoot, TextNode } from "lexical";
+import { ExternalValuePlugin } from "./plugins/ExternalValuePlugin";
 import { ToolbarPlugin } from "./plugins/ToolbarPlugin";
 import classes from "./styles.module.css";
 
@@ -55,30 +56,25 @@ export const RichTextEditor = <T extends FieldValues>({
     [],
   );
 
+  // Создаем стабильную конфигурацию для LexicalComposer
+  const initialConfig = useMemo(
+    () => ({
+      namespace: "MyEditor",
+      theme,
+      onError: (errorField: Error) => {
+        console.error(errorField);
+      },
+      nodes: [TextNode],
+      editable: true,
+    }),
+    [],
+  );
+
   return (
     <Controller
       control={control}
       name={name}
       render={({ field: { onChange, value }, fieldState: { error } }) => {
-        const initialConfig = {
-          namespace: "MyEditor",
-          theme,
-          onError: (errorField: Error) => {
-            console.error(errorField);
-          },
-          nodes: [],
-          editable: true,
-          editorState: value
-            ? () => {
-                const root = $getRoot();
-                const paragraph = $createParagraphNode();
-                const text = $createTextNode(value);
-                paragraph.append(text);
-                root.append(paragraph);
-              }
-            : undefined,
-        };
-
         return (
           <Box mb={mb} flex={1}>
             <Text mb="xs" size="sm">
@@ -116,6 +112,7 @@ export const RichTextEditor = <T extends FieldValues>({
                     }}
                   />
                   <HistoryPlugin />
+                  <ExternalValuePlugin value={value || ""} />
                 </div>
               </LexicalComposer>
             </Box>
