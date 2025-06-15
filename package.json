@@ -5,5 +5,5 @@
     "build": "cd apps/frontend && npm run build"
   },
   "private": true,
-  "workspaces": ["apps"]
+  "workspaces": ["apps/frontend"]
 }
