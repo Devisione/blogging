@@ -15,13 +15,9 @@ export const Preview = () => {
   // eslint-disable-next-line -- всё ок
   const formData = values.publications?.[index]!;
 
-  const imageUrl =
-    // eslint-disable-next-line no-nested-ternary -- пох
-    formData.preview instanceof File
-      ? URL.createObjectURL(formData.preview)
-      : formData.preview_url
-        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${formData.preview_url}`
-        : void 0;
+  const imageUrl = formData.preview_url
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${formData.preview_url}`
+    : void 0;
 
   return (
     <BasePreview title="Предпросмотр YouTube Post">

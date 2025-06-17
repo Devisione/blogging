@@ -14,8 +14,18 @@ export const YoutubeStoriesForm = () => {
   return (
     <Grid w="1040px">
       <Grid.Col span={6}>
-        <AssetUpload accept="video/*" label="Видео" />
-        <AssetUpload accept="image/*" label="Обложка" />
+        <AssetUpload
+          accept="video/*"
+          groupName={`publications.${index}`}
+          label="Видео"
+          name={`publications.${index}.video_url`}
+        />
+        <AssetUpload
+          accept="image/*"
+          groupName={`publications.${index}`}
+          label="Обложка"
+          name={`publications.${index}.preview_url`}
+        />
         <RichTextEditor
           control={control}
           label="Подпись"

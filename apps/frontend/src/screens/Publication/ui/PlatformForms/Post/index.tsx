@@ -23,7 +23,12 @@ export const YoutubePostForm = () => {
   return (
     <Grid w="1040px">
       <Grid.Col span={6}>
-        <AssetUpload accept="image/*" label="Обложка" />
+        <AssetUpload
+          accept="image/*"
+          groupName={`publications.${index}`}
+          label="Обложка"
+          name={`publications.${index}.preview_url`}
+        />
         <Flex align="center">
           <RichTextEditor
             control={control}

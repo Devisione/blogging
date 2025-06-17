@@ -12,10 +12,9 @@ export const Preview = () => {
   const publishDate = getValues(`publishDate`);
   const formData = getValues(`publications.${index}`);
 
-  const videoUrl =
-    formData.video instanceof File
-      ? URL.createObjectURL(formData.video)
-      : formData.video;
+  const videoUrl = formData.video_url
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${formData.video_url}`
+    : void 0;
 
   return (
     <BasePreview title="Предпросмотр YouTube Shorts">

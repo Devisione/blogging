@@ -3,11 +3,24 @@ import type { UploadAttachmentInputDto } from "./input.dto";
 
 const uploadAttachment = async (
   inputDto: UploadAttachmentInputDto,
-): Promise<any> => {
+): Promise<{
+  filename: string;
+  id: string;
+  mimetype: string;
+  size: number;
+  url: string;
+}> => {
   const formData = new FormData();
   formData.append("file", inputDto.file);
+  formData.append("multiple", inputDto.multiple.toString());
 
-  const { status } = await axios.post(
+  const { data } = await axios.post<{
+    filename: string;
+    id: string;
+    mimetype: string;
+    size: number;
+    url: string;
+  }>(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/attachment/upload/${inputDto.publicationId}`,
     formData,
     {
@@ -15,7 +28,7 @@ const uploadAttachment = async (
     },
   );
 
-  return status === 200;
+  return data;
 };
 
 export default uploadAttachment;

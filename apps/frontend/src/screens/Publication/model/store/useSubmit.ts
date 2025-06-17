@@ -54,7 +54,9 @@ export const useSubmit = () => {
     await PublicationGroupApi.depublishGroup({
       groupId: query.publicationId as string,
     });
-  }, [query.publicationId]);
+
+    reload();
+  }, [query.publicationId, reload]);
 
   return { submit, schedule, deSchedule };
 };

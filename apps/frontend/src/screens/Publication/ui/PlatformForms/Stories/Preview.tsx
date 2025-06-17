@@ -12,15 +12,13 @@ export const Preview = () => {
   const publishDate = getValues(`publishDate`);
   const formData = getValues(`publications.${index}`);
 
-  const videoUrl =
-    formData.video instanceof File
-      ? URL.createObjectURL(formData.video)
-      : formData.video;
+  const videoUrl = formData.video_url
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${formData.video_url}`
+    : void 0;
 
-  const thumbnailUrl =
-    formData.preview instanceof File
-      ? URL.createObjectURL(formData.preview)
-      : formData.preview;
+  const imageUrl = formData.preview_url
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${formData.preview_url}`
+    : void 0;
 
   return (
     <BasePreview title="Предпросмотр YouTube Stories">
@@ -29,7 +27,7 @@ export const Preview = () => {
           {/* eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок */}
           <video
             controls
-            poster={thumbnailUrl}
+            poster={imageUrl}
             src={videoUrl}
             style={{
               width: "100%",
