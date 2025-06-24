@@ -41,7 +41,7 @@ const PublicationDetail = ({ setModalOpen, event }: PublicationModalProps) => {
       >
         <RichTextEditor
           control={form.control}
-          label="Описание"
+          label="Сценарий"
           name="description"
         />
 

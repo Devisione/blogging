@@ -158,6 +158,8 @@ export const Publication = () => {
     }
   };
 
+  const { submit, schedule, deSchedule } = useSubmit();
+
   const addPublication = (contentType: ContentType) => {
     const id = uuidv4();
     const newPublication: PublicationType = {
@@ -169,6 +171,7 @@ export const Publication = () => {
     };
     append(newPublication);
     setActivePublication(id);
+    void submit();
   };
 
   const removePublication = (id: string) => {
@@ -179,6 +182,8 @@ export const Publication = () => {
         setActivePublication(publications[0].id);
       }
     }
+
+    void submit();
   };
 
   const handleChannelToggle = (publicationId: string, channelId: string) => {
@@ -200,8 +205,6 @@ export const Publication = () => {
   };
 
   const { data: event } = useUnit($event);
-
-  const { submit, schedule, deSchedule } = useSubmit();
 
   return (
     <>

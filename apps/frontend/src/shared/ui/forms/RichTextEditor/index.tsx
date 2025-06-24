@@ -38,7 +38,7 @@ export const RichTextEditor = <T extends FieldValues>({
   label,
   mb = "lg",
   toolbar = true,
-  placeholder = "Enter your text...",
+  placeholder = "Введите свой текст...",
 }: RichTextEditorProps<T>) => {
   const onEditorChange = useCallback(
     (onChange: (value: string) => void, editorState: EditorState) => {
