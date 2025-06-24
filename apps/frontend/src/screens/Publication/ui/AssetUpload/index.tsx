@@ -1,5 +1,7 @@
+import React from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { Box, FileInput, Group, Text } from "@mantine/core";
+import { ActionIcon, Box, FileInput, Flex, Group, Text } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 import { AttachmentApi } from "@entities/Attachment/api";
 
 interface AssetUploadProps {
@@ -17,8 +19,9 @@ export const AssetUpload = ({
   name,
   groupName,
 }: AssetUploadProps) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
   const publicationId = useWatch({ name: groupName, control });
+  const value = useWatch({ name, control }) as string;
 
   const onUpload = async (file: File) => {
     const { url } = await AttachmentApi.uploadAttachment({
@@ -31,34 +34,60 @@ export const AssetUpload = ({
     return url;
   };
 
+  const onDelete = () => {
+    void (async () => {
+      await AttachmentApi.deleteAttachment({ fileUrl: value });
+
+      setValue(name, void 0);
+    })();
+  };
+
   return (
-    <Box>
+    <>
       <Group gap="xs" mb="xs">
         <Text size="sm">{label}</Text>
       </Group>
+      <Flex>
+        <Box flex={1}>
+          <Controller
+            control={control}
+            name={name}
+            render={({ field }) => (
+              <FileInput
+                accept={accept}
+                multiple={multiple}
+                onChange={(files) => {
+                  void (async () => {
+                    if (files) {
+                      const url = await onUpload(
+                        Array.isArray(files) ? files[0] : files,
+                      );
 
-      <Controller
-        control={control}
-        name={name}
-        render={({ field }) => (
-          <FileInput
-            accept={accept}
-            multiple={multiple}
-            onChange={(files) => {
-              void (async () => {
-                if (files) {
-                  const url = await onUpload(
-                    Array.isArray(files) ? files[0] : files,
-                  );
-
-                  field.onChange(url);
-                }
-              })();
-            }}
-            placeholder="Upload file"
+                      field.onChange(url);
+                    }
+                  })();
+                }}
+                placeholder="Upload file"
+                style={{ width: "100%" }}
+              />
+            )}
           />
-        )}
-      />
-    </Box>
+        </Box>
+        {value ? (
+          <Flex align="center">
+            <ActionIcon
+              ml={12}
+              mr={12}
+              mt={6}
+              onClick={onDelete}
+              radius="xl"
+              variant="subtle"
+            >
+              <IconTrash />
+            </ActionIcon>
+          </Flex>
+        ) : null}
+      </Flex>
+    </>
   );
 };
