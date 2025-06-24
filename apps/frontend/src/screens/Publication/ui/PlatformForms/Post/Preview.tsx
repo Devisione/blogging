@@ -20,7 +20,7 @@ export const Preview = () => {
     : void 0;
 
   return (
-    <BasePreview title="Предпросмотр YouTube Post">
+    <BasePreview title="Предпросмотр сообщения">
       <Stack>
         {imageUrl ? (
           <Image

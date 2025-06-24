@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { AspectRatio, Stack, Text } from "@mantine/core";
 import { BasePreview } from "@shared/ui/preview/BasePreview";
 import { FieldPathContext } from "../../../model/store/content";
@@ -8,6 +8,7 @@ import type { PublicationFormValues } from "../../../model/types";
 export const Preview = () => {
   const { getValues } = useFormContext<PublicationFormValues>();
   const { index } = useContext(FieldPathContext);
+  useWatch<PublicationFormValues>();
 
   const publishDate = getValues(`publishDate`);
   const formData = getValues(`publications.${index}`);
@@ -17,22 +18,24 @@ export const Preview = () => {
     : void 0;
 
   return (
-    <BasePreview title="Предпросмотр YouTube Shorts">
+    <BasePreview title="Предпросмотр Shorts">
       <Stack>
-        <AspectRatio maw={315} ratio={9 / 16}>
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок */}
-          <video
-            controls
-            src={videoUrl}
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "8px",
-              overflow: "auto",
-              backgroundColor: "black",
-            }}
-          />
-        </AspectRatio>
+        {Boolean(videoUrl) && (
+          <AspectRatio maw={315} ratio={9 / 16}>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption -- всё ок */}
+            <video
+              controls
+              src={videoUrl}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "8px",
+                overflow: "auto",
+                backgroundColor: "black",
+              }}
+            />
+          </AspectRatio>
+        )}
         <Text fw={500} size="sm" style={{ wordWrap: "break-word" }}>
           {formData.content}
         </Text>
