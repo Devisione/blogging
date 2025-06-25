@@ -37,12 +37,7 @@ export const CONTENT_TYPE_ICONS = {
 
 // Определяем доступные типы контента для каждой платформы
 export const PLATFORM_CAPABILITIES = {
-  [Platform.YouTube]: new Set([
-    ContentType.VIDEO,
-    ContentType.SHORT,
-    ContentType.POST,
-    ContentType.STORIES,
-  ]),
+  [Platform.YouTube]: new Set([ContentType.VIDEO, ContentType.SHORT]),
   [Platform.VK]: new Set([
     ContentType.POST,
     ContentType.VIDEO,

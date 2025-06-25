@@ -40,17 +40,22 @@ const PLATFORM_ICONS = {
 
 const TelegramModal = ({ opened, onClose }: TelegramModalProps) => {
   const [apiToken, setApiToken] = useState("");
-  const [channelName, setChannelName] = useState("");
+  const [channelUrl, setChannelUrl] = useState("");
 
   const handleSubmit = () => {
     // TODO: Implement Telegram channel connection logic
-    console.log("Connecting Telegram channel:", { apiToken, channelName });
+    console.log("Connecting Telegram channel:", { apiToken, channelUrl });
     onClose();
   };
 
   return (
     <Modal onClose={onClose} opened={opened} title="Подключить Telegram канал">
       <Stack>
+        <Text fw={300}>
+          Для подключения Telegram, вам необходимо: создать бота через
+          @BotFather, после создания вам будет выдан токен бота - ключ доступа.
+          Добавьте своего бота в канал или группу.
+        </Text>
         <TextInput
           label="API Token"
           onChange={(e) => {
@@ -60,12 +65,12 @@ const TelegramModal = ({ opened, onClose }: TelegramModalProps) => {
           value={apiToken}
         />
         <TextInput
-          label="Название канала"
+          label="URL канала"
           onChange={(e) => {
-            setChannelName(e.target.value);
+            setChannelUrl(e.target.value);
           }}
           placeholder="Введите название канала"
-          value={channelName}
+          value={channelUrl}
         />
         <Button onClick={handleSubmit}>Подключить</Button>
       </Stack>
