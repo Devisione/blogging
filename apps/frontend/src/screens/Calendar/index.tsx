@@ -171,7 +171,7 @@ const CalendarPage = () => {
         onSelectSlot={handleSelectSlot}
         selectable
         startAccessor="start"
-        style={{ height: "100%" }}
+        style={{ height: "100%", minHeight: "853px" }}
       />
 
       <EventModal

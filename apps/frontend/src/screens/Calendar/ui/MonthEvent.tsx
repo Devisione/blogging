@@ -32,38 +32,46 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
 
   const onDelete = useUnit(onDeleteEvent);
 
+  const hasAction = event.publicationGroups?.some(
+    ({ status }) => status === "draft",
+  );
+
   return (
     <Flex align="center" direction="column" style={{ position: "relative" }}>
       <div>
-        <ActionIcon
-          aria-label="Settings"
-          color="rgba(255, 255, 255, 1)"
-          onClick={(e) => {
-            e.stopPropagation();
-            void onDelete({ id: event.id });
-          }}
-          radius="xl"
-          style={{ position: "absolute", left: -4, top: 0 }}
-          variant="subtle"
-        >
-          <IconTrash />
-        </ActionIcon>
-        <ActionIcon
-          aria-label="Settings"
-          color="rgba(255, 255, 255, 1)"
-          onClick={(e) => {
-            e.stopPropagation();
-            createPublication({
-              name: event.title || event.parent?.title || "",
-              eventId: event.id,
-            });
-          }}
-          radius="xl"
-          style={{ position: "absolute", right: 0, top: 0 }}
-          variant="subtle"
-        >
-          <IconPlus />
-        </ActionIcon>
+        {hasAction ? (
+          <ActionIcon
+            aria-label="Settings"
+            color="rgba(255, 255, 255, 1)"
+            onClick={(e) => {
+              e.stopPropagation();
+              void onDelete({ id: event.id });
+            }}
+            radius="xl"
+            style={{ position: "absolute", left: -4, top: 0 }}
+            variant="subtle"
+          >
+            <IconTrash />
+          </ActionIcon>
+        ) : null}
+        {hasAction ? (
+          <ActionIcon
+            aria-label="Settings"
+            color="rgba(255, 255, 255, 1)"
+            onClick={(e) => {
+              e.stopPropagation();
+              createPublication({
+                name: event.title || event.parent?.title || "",
+                eventId: event.id,
+              });
+            }}
+            radius="xl"
+            style={{ position: "absolute", right: 0, top: 0 }}
+            variant="subtle"
+          >
+            <IconPlus />
+          </ActionIcon>
+        ) : null}
         <Text component="span" size="xs">
           {startTime} -{" "}
           {getHumanReadableDifference(new Date(event.date), new Date(endDate))}
@@ -72,7 +80,7 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
       </div>
       {event.publicationGroups ? <hr style={{ width: "100%" }} /> : null}
       <Flex align="start" direction="column" justify="start" mb={4} w="100%">
-        {event.publicationGroups?.map(({ name, id }) => (
+        {event.publicationGroups?.map(({ name, id, status }) => (
           <Flex align="center" justify="space-between" key={id} w="100%">
             <Text
               fw="bold"
@@ -83,18 +91,20 @@ const MonthEvent = ({ event }: { event: EventWithDates }) => {
             >
               - {name}
             </Text>
-            <ActionIcon
-              aria-label="delete"
-              color="rgba(255, 255, 255, 1)"
-              onClick={(e) => {
-                e.stopPropagation();
-                deletePublicationGroup.start({ groupId: id });
-              }}
-              radius="xl"
-              variant="subtle"
-            >
-              <IconTrash />
-            </ActionIcon>
+            {status === "draft" && (
+              <ActionIcon
+                aria-label="delete"
+                color="rgba(255, 255, 255, 1)"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deletePublicationGroup.start({ groupId: id });
+                }}
+                radius="xl"
+                variant="subtle"
+              >
+                <IconTrash />
+              </ActionIcon>
+            )}
           </Flex>
         ))}
       </Flex>
