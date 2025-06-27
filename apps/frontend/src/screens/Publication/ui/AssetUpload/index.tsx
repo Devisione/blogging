@@ -8,6 +8,7 @@ interface AssetUploadProps {
   label: string;
   accept?: string;
   multiple?: boolean;
+  disabled?: boolean;
   name: string;
   groupName: string;
 }
@@ -18,6 +19,7 @@ export const AssetUpload = ({
   multiple = false,
   name,
   groupName,
+  disabled,
 }: AssetUploadProps) => {
   const { control, setValue } = useFormContext();
   const publicationId = useWatch({ name: groupName, control });
@@ -51,10 +53,12 @@ export const AssetUpload = ({
         <Box flex={1}>
           <Controller
             control={control}
+            disabled={disabled}
             name={name}
             render={({ field }) => (
               <FileInput
                 accept={accept}
+                disabled={disabled}
                 multiple={multiple}
                 onChange={(files) => {
                   void (async () => {
@@ -76,6 +80,7 @@ export const AssetUpload = ({
         {value ? (
           <Flex align="center">
             <ActionIcon
+              disabled={disabled}
               ml={12}
               mr={12}
               mt={6}

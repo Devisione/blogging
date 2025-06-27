@@ -30,6 +30,7 @@ import { $userState } from "@entities/User/model/store";
 import { Input } from "@shared/ui/forms/Input";
 import type { ContentType, Platform } from "@entities/Channel/model/types";
 import { FieldPathContext } from "../model/store/content";
+import { useDisabled } from "../model/store/useDisabled";
 import { useSubmit } from "../model/store/useSubmit";
 import { AddPublicationModal } from "./AddPublicationModal";
 import { ChannelSelector } from "./ChannelSelector";
@@ -70,6 +71,7 @@ const SortableTab = ({
       ...channel,
       platform: channel.type.toLowerCase() as Platform,
     }));
+  const disabled = useDisabled();
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -92,7 +94,11 @@ const SortableTab = ({
         <Stack gap="xs" w="100%">
           <Group gap="xs" justify="space-between" w="100%">
             <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
-              <span {...attributes} {...listeners} style={{ cursor: "grab" }}>
+              <span
+                {...(!disabled ? { ...attributes } : {})}
+                {...(!disabled ? { ...listeners } : {})}
+                style={!disabled ? { cursor: "grab" } : {}}
+              >
                 ⠿
               </span>
               <ContentTypeIcon size={20} style={{ flexShrink: 0 }} />
@@ -102,6 +108,7 @@ const SortableTab = ({
             </Group>
             <ActionIcon
               color="red"
+              disabled={disabled}
               ml="xs"
               onClick={(e) => {
                 e.stopPropagation();
@@ -206,11 +213,18 @@ export const Publication = () => {
 
   const { data: event } = useUnit($event);
 
+  const disabled = useDisabled();
+
   return (
     <>
       {createPortal(
         <>
-          <Input control={control} name="name" placeholder="Наименование" />
+          <Input
+            control={control}
+            disabled={disabled}
+            name="name"
+            placeholder="Наименование"
+          />
           {publicationsGroup?.status !== "published" && (
             <Button
               // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
@@ -220,21 +234,21 @@ export const Publication = () => {
               Сохранить
             </Button>
           )}
-          {publicationsGroup?.status ? (
+          {publicationsGroup?.status !== "published" ? (
             <Button
               // eslint-disable-next-line @typescript-eslint/no-misused-promises -- всё ок
               onClick={
-                publicationsGroup.status === "draft" ? schedule : deSchedule
+                publicationsGroup?.status === "draft" ? schedule : deSchedule
               }
               style={{ marginLeft: "12px" }}
               variant="default"
             >
-              {publicationsGroup.status === "draft" && "Запланировать"}
-              {publicationsGroup.status === "scheduled" && "Отменить"}
+              {publicationsGroup?.status === "draft" && "Запланировать"}
+              {publicationsGroup?.status === "scheduled" && "Отменить"}
             </Button>
           ) : null}
           <Field
-            disabled={Boolean(event)}
+            disabled={disabled || Boolean(event)}
             name="publishDate"
             render={({ field }) => (
               <DateTimePicker
@@ -245,6 +259,9 @@ export const Publication = () => {
               />
             )}
           />
+          {publicationsGroup?.status === "published" && (
+            <Text ml={12}>Опубликовано!</Text>
+          )}
           {publicationsGroup?.updatedAt ? (
             <Text ml={12}>
               {`Обновлено: ${format(publicationsGroup.updatedAt, "dd/MM/yyyy HH:mm")}`}
@@ -270,6 +287,7 @@ export const Publication = () => {
         <Group align="flex-start" style={{ flex: 1 }}>
           <Stack gap="md" w={300}>
             <Button
+              disabled={disabled}
               fullWidth
               leftSection={<IconPlus size={16} />}
               onClick={open}

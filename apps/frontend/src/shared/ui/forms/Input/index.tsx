@@ -7,6 +7,7 @@ interface InputProps<T extends FieldValues> {
   name: Path<T>;
   label?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export const Input = <T extends FieldValues>({
@@ -14,10 +15,12 @@ export const Input = <T extends FieldValues>({
   name,
   label,
   placeholder,
+  disabled,
 }: InputProps<T>) => {
   return (
     <Controller
       control={control}
+      disabled={disabled}
       name={name}
       render={({ field, fieldState: { error } }) => (
         <MantineInput.Wrapper error={error?.message} label={label}>

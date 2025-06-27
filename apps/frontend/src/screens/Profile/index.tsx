@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useRouter } from "next/router";
 import {
   Anchor,
   Avatar,
@@ -41,11 +42,18 @@ const PLATFORM_ICONS = {
 const TelegramModal = ({ opened, onClose }: TelegramModalProps) => {
   const [apiToken, setApiToken] = useState("");
   const [channelUrl, setChannelUrl] = useState("");
+  const { reload } = useRouter();
 
   const handleSubmit = () => {
     // TODO: Implement Telegram channel connection logic
     console.log("Connecting Telegram channel:", { apiToken, channelUrl });
-    onClose();
+
+    void ChannelApi.connectTelegram({ url: channelUrl, token: apiToken }).then(
+      () => {
+        onClose();
+        reload();
+      },
+    );
   };
 
   return (

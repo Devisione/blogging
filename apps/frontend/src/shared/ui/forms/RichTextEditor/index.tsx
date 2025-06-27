@@ -30,6 +30,7 @@ interface RichTextEditorProps<T extends FieldValues> {
   mb?: string | number;
   placeholder?: string;
   toolbar?: boolean;
+  disabled?: boolean;
 }
 
 export const RichTextEditor = <T extends FieldValues>({
@@ -39,6 +40,7 @@ export const RichTextEditor = <T extends FieldValues>({
   mb = "lg",
   toolbar = true,
   placeholder = "Введите свой текст...",
+  disabled,
 }: RichTextEditorProps<T>) => {
   const onEditorChange = useCallback(
     (onChange: (value: string) => void, editorState: EditorState) => {
@@ -65,14 +67,15 @@ export const RichTextEditor = <T extends FieldValues>({
         console.error(errorField);
       },
       nodes: [TextNode],
-      editable: true,
+      editable: !disabled,
     }),
-    [],
+    [disabled],
   );
 
   return (
     <Controller
       control={control}
+      disabled={disabled}
       name={name}
       render={({ field: { onChange, value }, fieldState: { error } }) => {
         return (
