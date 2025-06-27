@@ -26,6 +26,13 @@ export const YoutubeShortsForm = () => {
         <RichTextEditor
           control={control}
           disabled={disabled}
+          label="Название"
+          name={`publications.${index}.title`}
+          toolbar={false}
+        />
+        <RichTextEditor
+          control={control}
+          disabled={disabled}
           label="Описание"
           name={`publications.${index}.content`}
           toolbar={false}

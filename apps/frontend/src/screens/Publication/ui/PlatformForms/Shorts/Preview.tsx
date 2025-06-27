@@ -36,6 +36,9 @@ export const Preview = () => {
             />
           </AspectRatio>
         )}
+        <Text fw={500} size="lg" style={{ wordWrap: "break-word" }}>
+          {formData.title}
+        </Text>
         <Text fw={500} size="sm" style={{ wordWrap: "break-word" }}>
           {formData.content}
         </Text>
